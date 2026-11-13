@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>مختبر حالات المادة</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+/* Layout: one calm card per screen ("one idea at a time"), slim progress rail on top, a single primary action at the bottom.
+   Each state of matter owns one color used everywhere (signaling): solid = ice blue, liquid = teal, gas = warm orange. */
+:root{
+  --bg:#F2F5F9; --surface:#FFFFFF; --surface-2:#F7F9FC; --ink:#1B2333; --muted:#5A6577; --line:#DDE4EC;
+  --primary:#22305E; --on-primary:#FFFFFF; --sun:#F2B632;
+  --solid:#3767D8; --solid-soft:#E5EDFC;
+  --liquid:#0C9696; --liquid-soft:#DDF2F1;
+  --gas:#D9712A; --gas-soft:#FBEADC;
+  --ok:#2A9257; --ok-soft:#E0F2E7; --bad:#C9435A; --bad-soft:#FBE5E8;
+  --glass:#9DB0C3; --beaker:#F4F8FC; --shadow:0 1px 2px rgba(27,35,51,.06),0 8px 24px rgba(27,35,51,.06);
+  --f-display:"Baloo Bhaijaan 2","Tajawal","Segoe UI",Tahoma,sans-serif;
+  --f-body:"Tajawal","Segoe UI",Tahoma,Arial,sans-serif;
+  --fs:17px; --r:22px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E141E; --surface:#172030; --surface-2:#1C2638; --ink:#E7ECF4; --muted:#9BA7B9; --line:#2A3549;
+  --primary:#B9C8FF; --on-primary:#111A2E; --sun:#F5C451;
+  --solid:#77A0FF; --solid-soft:#1D2A4A; --liquid:#33C7C4; --liquid-soft:#14302F; --gas:#F59A57; --gas-soft:#3A2617;
+  --ok:#55C584; --ok-soft:#163223; --bad:#F07C8E; --bad-soft:#3A1B23;
+  --glass:#5D6F87; --beaker:#121A27; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E141E; --surface:#172030; --surface-2:#1C2638; --ink:#E7ECF4; --muted:#9BA7B9; --line:#2A3549;
+  --primary:#B9C8FF; --on-primary:#111A2E; --sun:#F5C451;
+  --solid:#77A0FF; --solid-soft:#1D2A4A; --liquid:#33C7C4; --liquid-soft:#14302F; --gas:#F59A57; --gas-soft:#3A2617;
+  --ok:#55C584; --ok-soft:#163223; --bad:#F07C8E; --bad-soft:#3A1B23;
+  --glass:#5D6F87; --beaker:#121A27; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+html{font-size:var(--fs)}
+html.big{--fs:20px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1rem;line-height:1.75;direction:rtl;min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:2.1rem;font-weight:800}
+h2{font-size:1.65rem;font-weight:800}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px;border-radius:10px}
+
+/* decorative ambience (hidden in focus mode) */
+.decor{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.decor span{position:absolute;border-radius:50%;filter:blur(60px);opacity:.16}
+.decor .d1{width:340px;height:340px;background:var(--solid);top:-80px;right:-90px}
+.decor .d2{width:300px;height:300px;background:var(--liquid);bottom:-90px;left:-60px}
+.decor .d3{width:220px;height:220px;background:var(--gas);top:40%;left:55%;opacity:.08}
+html.focus .decor{display:none}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.top-in{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:1.1rem;white-space:nowrap}
+.brand svg{width:34px;height:34px}
+.prog{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.prog-label{font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.prog-label b{color:var(--ink);font-weight:700}
+.rail{height:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.rail i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gas),var(--liquid),var(--solid));border-radius:99px;transition:width .5s ease}
+.tools{display:flex;gap:6px}
+.tool{border:1px solid var(--line);background:var(--surface-2);border-radius:12px;min-width:44px;height:44px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-size:.85rem;font-weight:700}
+.tool svg{width:20px;height:20px;flex:none}
+.tool[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.tool .tl{display:none}
+@media (min-width:880px){.tool .tl{display:inline}}
+
+/* stage */
+main{position:relative;z-index:1;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 120px}
+.stage{max-width:1000px;margin:0 auto;outline:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:clamp(18px,4vw,36px);display:flex;flex-direction:column;gap:20px;animation:in .35s ease both}
+@keyframes in{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:none}}
+html.focus .card{box-shadow:none}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow .dot{width:10px;height:10px;border-radius:50%;background:currentColor}
+.lead{font-size:1.15rem;color:var(--ink);max-width:62ch}
+.muted{color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* bottom nav */
+.nav{position:fixed;inset:auto 0 0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(12px + env(safe-area-inset-bottom,0px))}
+.nav-in{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.nav .hint{flex:1;min-width:0;font-size:.9rem;color:var(--muted);text-align:center}
+@media (max-width:560px){.nav-in{flex-wrap:wrap;justify-content:space-between}.nav .hint{order:-1;flex-basis:100%;font-size:.8rem;line-height:1.4}.nav .hint:empty{display:none}.btn{padding:0 16px}}
+.btn{border:0;border-radius:16px;min-height:52px;padding:0 24px;font-weight:700;font-size:1.05rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s ease,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn svg{width:20px;height:20px}
+.btn-primary{background:var(--primary);color:var(--on-primary)}
+.btn-ghost{background:transparent;border:2px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.btn-soft{background:var(--surface-2);border:2px solid var(--line);color:var(--ink)}
+
+/* welcome */
+.hero{display:grid;gap:28px;align-items:center}
+@media (min-width:800px){.hero{grid-template-columns:1.05fr 1fr}}
+.trio{display:flex;align-items:flex-end;justify-content:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:20px 10px 14px}
+.trio figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0}
+.trio svg{width:100%;max-width:120px;height:auto}
+.trio figcaption{font-family:var(--f-display);font-weight:700;font-size:1rem}
+.trio .arr{align-self:center;color:var(--muted);flex:none;width:22px}
+.goals{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.goals li{display:flex;gap:12px;align-items:flex-start}
+.goals .gi{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--line);font-weight:800;font-size:.9rem}
+.field{display:flex;flex-direction:column;gap:6px;max-width:360px}
+.field label{font-weight:700}
+.field input{font:inherit;font-size:1.05rem;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.field input:focus{border-color:var(--solid);outline:none}
+.resume{border:1px dashed var(--line);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+
+/* question */
+.q{font-family:var(--f-display);font-size:1.4rem;font-weight:700;line-height:1.45}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;text-align:right;width:100%;padding:14px 16px;min-height:60px;border-radius:16px;border:2px solid var(--line);background:var(--surface-2);cursor:pointer;font-size:1.08rem;font-weight:500;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--primary)}
+.opt .k{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font-weight:800;font-family:var(--f-display)}
+.opt .mk{margin-inline-start:auto;flex:none;width:26px;height:26px}
+.opt.is-ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.is-bad{border-color:var(--bad);background:var(--bad-soft);opacity:.85}
+.opt:disabled{cursor:default}
+.fb{border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.fb svg{flex:none;width:28px;height:28px;margin-top:2px}
+.fb.ok{background:var(--ok-soft);color:var(--ink)} .fb.ok svg{color:var(--ok)}
+.fb.bad{background:var(--bad-soft)} .fb.bad svg{color:var(--bad)}
+.fb.info{background:var(--surface-2);border:1px solid var(--line)}
+.fb strong{display:block;font-family:var(--f-display);font-size:1.08rem}
+.dots{display:flex;gap:6px}
+.dots i{width:28px;height:6px;border-radius:9px;background:var(--line)}
+.dots i.on{background:var(--primary)}
+
+/* path */
+.paths{display:grid;gap:14px}
+@media (min-width:700px){.paths{grid-template-columns:1fr 1fr}}
+.pathc{border:2px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px;cursor:pointer;background:var(--surface-2);text-align:right}
+.pathc[aria-pressed="true"]{border-color:var(--primary);background:var(--surface);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 18%,transparent)}
+.pathc .badge{align-self:flex-start}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line)}
+.pathc ul{margin:0;padding-inline-start:18px;color:var(--muted)}
+
+/* lesson */
+.lesson{display:grid;gap:24px}
+@media (min-width:820px){.lesson{grid-template-columns:1fr 1.1fr;align-items:start}}
+.vis{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.pane{border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;position:relative}
+.pane .cap{font-size:.82rem;font-weight:700;color:var(--muted)}
+.pane svg.illo{width:100%;max-width:170px;height:auto}
+.pane canvas{width:100%;height:auto;aspect-ratio:1/1;max-width:100%;display:block}
+.pane.ph{border:2px dashed var(--line);justify-content:center;color:var(--muted);text-align:center;font-size:.9rem;min-height:160px}
+.st-solid{--c:var(--solid);--cs:var(--solid-soft)} .st-liquid{--c:var(--liquid);--cs:var(--liquid-soft)} .st-gas{--c:var(--gas);--cs:var(--gas-soft)}
+.tinted{background:var(--cs)}
+.colored{color:var(--c)}
+.props{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.props li{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.props .pk{font-weight:800;color:var(--c);min-width:5.5em}
+.analogy{border-inline-start:5px solid var(--c);background:var(--cs);border-radius:14px;padding:14px 16px}
+.analogy b{font-family:var(--f-display)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:4px 12px;border-radius:99px;background:var(--cs);font-weight:700;font-size:.92rem}
+.steps{display:flex;gap:6px;align-items:center;font-size:.82rem;color:var(--muted)}
+.steps i{width:26px;height:6px;border-radius:9px;background:var(--line)}
+.steps i.on{background:var(--c)}
+.extra{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:10px}
+.extra svg{flex:none;width:24px;height:24px;color:var(--sun)}
+
+/* lab */
+.lab{display:grid;gap:20px}
+@media (min-width:820px){.lab{grid-template-columns:1.25fr 1fr}}
+.labview{display:flex;gap:14px;align-items:stretch;background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:14px}
+.labview canvas{flex:1 1 0;width:0;min-width:0;height:auto;aspect-ratio:4/3.4;display:block}
+.thermo{flex:none;width:46px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tube{position:relative;flex:1;width:16px;border-radius:99px;background:var(--surface);border:2px solid var(--glass);overflow:hidden;min-height:160px}
+.tube i{position:absolute;inset:auto 0 0;background:var(--bad);border-radius:99px;transition:height .2s}
+.bulb{width:30px;height:30px;border-radius:50%;background:var(--bad);border:2px solid var(--glass);margin-top:-12px}
+.temp{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums;display:inline-flex;gap:6px;align-items:baseline}
+.statebadge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;font-weight:800;background:var(--cs);color:var(--c);font-family:var(--f-display);font-size:1.1rem}
+.slider{width:100%;accent-color:var(--bad);height:36px;cursor:pointer}
+.scale{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);direction:ltr;font-variant-numeric:tabular-nums}
+.tasks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tasks li{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:2px solid var(--line);color:var(--muted)}
+.tasks li.cur{border-color:var(--primary);color:var(--ink);font-weight:700}
+.tasks li.done{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+.tasks .tk{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center}
+.tasks li.done .tk{background:var(--ok);border-color:var(--ok);color:var(--on-primary)}
+.tasks .tk svg{width:16px;height:16px}
+
+/* sort */
+.sortitem{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);align-self:center;min-width:220px;max-width:100%}
+.sortitem svg{width:104px;height:104px}
+.sortitem b{font-family:var(--f-display);font-size:1.4rem}
+.bins{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bin{border:3px solid var(--c);background:var(--cs);border-radius:18px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-family:var(--f-display);font-weight:800;font-size:1.05rem;min-height:110px;justify-content:center}
+.bin svg{width:44px;height:44px;color:var(--c)}
+.bin:disabled{opacity:.35;cursor:not-allowed}
+.counter{font-variant-numeric:tabular-nums}
+.tally{display:flex;gap:8px;flex-wrap:wrap}
+
+/* changes */
+.cmap{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:6px;padding:18px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);overflow-x:auto}
+.node{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--f-display);font-weight:800;color:var(--c);min-width:0}
+.node svg.illo{width:100%;max-width:96px;height:auto}
+.arrows{display:flex;flex-direction:column;gap:10px}
+.arw{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:700;font-size:.92rem;white-space:nowrap}
+.arw svg{width:20px;height:20px;flex:none}
+.arw.hot svg{color:var(--bad)} .arw.cold svg{color:var(--solid)}
+.arw[aria-pressed="true"]{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 20%,transparent)}
+.arw.seen{background:var(--ok-soft)}
+.subl{grid-column:1/-1;justify-self:center}
+.cdetail{border-radius:18px;border:2px solid var(--line);padding:16px;display:grid;gap:6px;min-height:120px}
+.cdetail .fromto{font-family:var(--f-display);font-weight:800;font-size:1.15rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (max-width:560px){.cmap{grid-template-columns:1fr;justify-items:center}.arrows{flex-direction:row;flex-wrap:wrap;justify-content:center}.arrows .arw svg{transform:rotate(-90deg)}}
+
+/* quiz + report */
+.qmeta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.lvl{display:inline-flex;gap:8px;align-items:center;font-size:.85rem;color:var(--muted);font-weight:700}
+.lvl i{display:inline-block;width:8px;border-radius:3px;background:var(--line)}
+.lvl i:nth-child(1){height:10px}.lvl i:nth-child(2){height:15px}.lvl i:nth-child(3){height:20px}
+.lvl i.on{background:var(--sun)}
+.cert{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 0}
+.stars{display:flex;gap:8px;justify-content:center}
+.stars svg{width:56px;height:56px}
+.mast{display:grid;gap:12px}
+.mrow{display:grid;grid-template-columns:7.5em 1fr auto;gap:12px;align-items:center}
+.mrow .bar{height:14px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.mrow .bar i{display:block;height:100%;background:var(--c);border-radius:99px}
+.mrow .pct{font-variant-numeric:tabular-nums;font-weight:700;min-width:3.2em;text-align:left}
+.mrow .nm{font-weight:800;color:var(--c)}
+.recs{display:flex;gap:10px;flex-wrap:wrap}
+
+/* teacher sheet */
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(10,15,25,.45);display:flex;justify-content:center;align-items:flex-end;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+@media (min-width:700px){.sheet{align-items:center}}
+.sheet-in{background:var(--surface);color:var(--ink);border-radius:22px;max-width:680px;width:100%;max-height:85vh;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.sheet dl{margin:0;display:grid;gap:10px}
+.sheet dt{font-weight:800;font-family:var(--f-display)}
+.sheet dd{margin:0;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.steam path{stroke-dasharray:6 8;animation:rise 2.4s linear infinite}
+@keyframes rise{to{stroke-dashoffset:-28}}
+@media (prefers-reduced-motion: reduce){.card{animation:none}.steam path{animation:none}.rail i{transition:none}}
+html.focus .steam path{animation:none}
+</style>
+
+<div class="decor" aria-hidden="true"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="11" fill="var(--primary)"/><circle cx="12" cy="27" r="4" fill="var(--solid)"/><circle cx="20" cy="27" r="4" fill="var(--liquid)"/><circle cx="28" cy="13" r="4" fill="var(--gas)"/><circle cx="16" cy="17" r="2.6" fill="var(--on-primary)" opacity=".8"/></svg>
+      <span>مختبر حالات المادة</span>
+    </div>
+    <div class="prog" aria-live="polite">
+      <div class="prog-label"><span id="stLabel"><b>البداية</b></span><span id="stCount" class="counter">1 / 9</span></div>
+      <div class="rail" role="progressbar" aria-label="تقدّمك في الرحلة" aria-valuemin="0" aria-valuemax="100" id="rail"><i id="railFill"></i></div>
+    </div>
+    <div class="tools" role="toolbar" aria-label="أدوات">
+      <button class="tool" id="tSpeak" type="button" aria-label="اقرأ لي الشاشة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg><span class="tl">اقرأ لي</span></button>
+      <button class="tool" id="tFocus" type="button" aria-pressed="false" aria-label="وضع التركيز"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg><span class="tl">تركيز</span></button>
+      <button class="tool" id="tBig" type="button" aria-pressed="false" aria-label="تكبير الخط"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19 9 5l5 14M5.8 14h6.4"/><path d="M17 10v8M13 14h8"/></svg><span class="tl">خط أكبر</span></button>
+      <button class="tool" id="tSound" type="button" aria-pressed="true" aria-label="الأصوات"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span class="tl">أصوات</span></button>
+      <button class="tool" id="tTeacher" type="button" aria-label="دليل المعلّم"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8l10-5 10 5-10 5z"/><path d="M6 10.5V16c3 2.5 9 2.5 12 0v-5.5"/></svg><span class="tl">للمعلّم</span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="stage" id="stage" tabindex="-1"></div>
+</main>
+
+<nav class="nav" aria-label="التنقّل">
+  <div class="nav-in">
+    <button class="btn btn-ghost" id="bBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>السابق</button>
+    <p class="hint" id="navHint" aria-live="polite"></p>
+    <button class="btn btn-primary" id="bNext" type="button">التالي<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+  </div>
+</nav>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-in" role="dialog" aria-modal="true" aria-labelledby="shT">
+    <div class="row" style="justify-content:space-between"><h2 id="shT">دليل المعلّم</h2><button class="btn btn-soft" id="shClose" type="button">إغلاق</button></div>
+    <p class="muted">بيئة تعلّم تكيّفية لطلبة الصفوف 3–6 حول حالات المادة الثلاث وتحوّلاتها. مدة الرحلة نحو 20 دقيقة.</p>
+    <dl>
+      <dt>نواتج التعلّم</dt><dd>يميّز الطالب بين الصلب والسائل والغاز من حيث الشكل والحجم وترتيب الجسيمات وحركتها، ويصنّف مواد من حياته اليومية، ويفسّر الانصهار والتجمّد والتبخّر والتكاثف (والتسامي في المسار المتقدّم).</dd>
+      <dt>التكيّف</dt><dd>اختبار قبلي من 3 أسئلة يقترح مسارًا (المستكشف أو العالِم الصغير) ويمكن للطالب تغييره. المسار المتقدّم يضيف معلومات وأسئلة أعمق. عند الخطأ يظهر تشبيه بديل وتلميح بدل الإجابة مباشرة. أسئلة التحدّي الختامي يرتفع مستواها مع الإجابة الصحيحة وينخفض مع الخطأ، وتُختار من الحالة الأضعف أولًا. التقرير النهائي يقترح مراجعة الحالة الأضعف.</dd>
+      <dt>مراعاة الحمل المعرفي</dt><dd>فكرة واحدة في كل شاشة، والمحتوى يظهر على خطوات (التجزئة). صورة من الواقع بجانب نموذج الجسيمات مع نص قصير (الترميز المزدوج). لون ثابت لكل حالة في كل الشاشات (الإشارة). زر متابعة واحد لا يُفعَّل إلا بعد إنجاز المهمة.</dd>
+      <dt>تقليل التشتّت</dt><dd>لا أصوات أو حركات تلقائية مزعجة، وزر «تركيز» يخفي الزخارف والحركات الجانبية. شيء واحد يُصنَّف في كل مرة بدل قائمة طويلة.</dd>
+      <dt>قابلية الوصول</dt><dd>تكبير الخط، قراءة صوتية للشاشة (حسب دعم المتصفح للعربية)، تشغيل كامل بلوحة المفاتيح، ووضع ليلي تلقائي. يُحفظ التقدّم على هذا الجهاز فقط.</dd>
+    </dl>
+  </div>
+</div>
+
+<script>
+(()=>{
+"use strict";
+/* ---------------- icons & illustrations ---------------- */
+const IC={
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>',
+  bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 7v6M12 16.5v.5"/></svg>',
+  bulb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  cross:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  arrowL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg>',
+  arrowR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>',
+  star:(on)=>`<svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="${on?'var(--sun)':'var(--line)'}" stroke="${on?'var(--sun)':'var(--line)'}" stroke-width="1.2" stroke-linejoin="round"/></svg>`
+};
+const ILLO={
+  solid:`<svg class="illo" viewBox="0 0 160 160" aria-hidden="true"><ellipse cx="82" cy="140" rx="50" ry="7" fill="#1B2333" opacity=".1"/><polygon points="36,58 88,42 126,60 74,78" fill="#D5E9FF"/><polygon points="36,58 74,78 74,134 36,114" fill="#86B6F2"/><polygon points="74,78 126,60 126,116 74,134" fill="#A8CEF8"/><path d="M45 68v34" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".75"/><path d="M58 55l20-6" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/><path d="M36 58 88 42 126 60 126 116 74 134 36 114z" fill="none" stroke="#5E8FD6" stroke-width="2.5" stroke-linejoin="round"/><path d="M74 78v56M74 78l52-18" stroke="#5E8FD6" stroke-width="2" opacity=".6"/></svg>`,
+  liquid:`<svg class="illo" viewBox="0 0 160 160" aria-hidden="true"><ellipse cx="80" cy="146" rx="40" ry="6" fill="#1B2333" opacity=".1"/><path d="M50 72q15-7 30 0t30 0l-6 66q-.5 4-4.5 4h-39q-4 0-4.5-4z" fill="#2BB3B1" opacity=".9"/><circle cx="70" cy="100" r="4" fill="#fff" opacity=".55"/><circle cx="88" cy="118" r="3" fill="#fff" opacity=".5"/><circle cx="78" cy="88" r="2.5" fill="#fff" opacity=".5"/><path d="M45 26h70l-10 112q-.5 4-4.5 4h-41q-4 0-4.5-4z" fill="none" stroke="#8EA7B8" stroke-width="3.5" stroke-linejoin="round"/><path d="M55 36l6 92" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"/></svg>`,
+  gas:`<svg class="illo" viewBox="0 0 160 160" aria-hidden="true"><g class="steam" fill="none" stroke="#A9B6C9" stroke-width="5" stroke-linecap="round"><path d="M58 60c-9-9 9-15 0-24s9-15 0-22"/><path d="M80 58c-9-9 9-15 0-24s9-15 0-24"/><path d="M102 60c-9-9 9-15 0-24s9-15 0-22"/></g><ellipse cx="80" cy="146" rx="52" ry="6" fill="#1B2333" opacity=".1"/><rect x="34" y="74" width="92" height="58" rx="12" fill="#D9712A"/><rect x="26" y="66" width="108" height="13" rx="6.5" fill="#A9531A"/><rect x="72" y="58" width="16" height="10" rx="4" fill="#A9531A"/><rect x="16" y="88" width="20" height="9" rx="4.5" fill="#A9531A"/><rect x="124" y="88" width="20" height="9" rx="4.5" fill="#A9531A"/><path d="M46 90v28" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".35"/><path d="M62 146c-2-6 6-8 4-14 6 4 8 10 4 14zM78 146c-3-7 7-10 4-17 7 5 9 12 4 17zM94 146c-2-6 6-8 4-14 6 4 8 10 4 14z" fill="#F2B632"/></svg>`
+};
+const PAT={
+  solid:'<svg viewBox="0 0 48 48" aria-hidden="true">'+[12,24,36].map(y=>[12,24,36].map(x=>`<circle cx="${x}" cy="${y}" r="5" fill="currentColor"/>`).join('')).join('')+'</svg>',
+  liquid:'<svg viewBox="0 0 48 48" aria-hidden="true">'+[[9,38],[19,39],[29,38],[39,39],[14,29],[24,30],[34,28],[20,20],[31,19]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="currentColor"/>`).join('')+'</svg>',
+  gas:'<svg viewBox="0 0 48 48" aria-hidden="true">'+[[8,9],[31,7],[42,24],[16,25],[29,32],[9,41],[40,42]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5" fill="currentColor"/>`).join('')+'</svg>'
+};
+const ITEMIC={
+  stone:'<path d="M10 44c-2-11 7-21 19-23s24 4 24 15-9 15-21 15S12 52 10 44z" fill="#8E96A3"/><path d="M20 30c4-3 10-4 14-3" stroke="#C6CCD5" stroke-width="3" fill="none" stroke-linecap="round"/>',
+  ice:'<polygon points="12,22 36,14 54,23 30,31" fill="#D5E9FF"/><polygon points="12,22 30,31 30,56 12,47" fill="#86B6F2"/><polygon points="30,31 54,23 54,48 30,56" fill="#A8CEF8"/><path d="M12 22 36 14 54 23 54 48 30 56 12 47z" fill="none" stroke="#5E8FD6" stroke-width="2" stroke-linejoin="round"/>',
+  pencil:'<g transform="rotate(-35 32 32)"><rect x="12" y="27" width="34" height="10" fill="#F2B632"/><rect x="6" y="27" width="7" height="10" rx="2" fill="#E58FA0"/><path d="M46 27l11 5-11 5z" fill="#EBCBA0"/><path d="M53.5 30.4 57 32l-3.5 1.6z" fill="#333"/></g>',
+  juice:'<path d="M20.4 24h23.2l-2.6 30H23z" fill="#F39A2B"/><path d="M18 10h28l-4 46H22z" fill="none" stroke="#8EA7B8" stroke-width="3" stroke-linejoin="round"/><circle cx="44" cy="12" r="7" fill="#F7B54A" stroke="#E0891D" stroke-width="2"/>',
+  milk:'<path d="M20.4 24h23.2l-2.6 30H23z" fill="#F7F6F0" stroke="#C9CFD6" stroke-width="1.5"/><path d="M18 10h28l-4 46H22z" fill="none" stroke="#8EA7B8" stroke-width="3" stroke-linejoin="round"/>',
+  oil:'<rect x="26" y="5" width="12" height="8" rx="2" fill="#7A6A2B"/><path d="M24 13h16v6l6 8v27a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V27l6-8z" fill="#E8C547"/><rect x="22" y="33" width="20" height="13" rx="2" fill="#fff" opacity=".75"/>',
+  balloon:'<ellipse cx="32" cy="25" rx="15" ry="18" fill="#E25563"/><path d="M29.5 43h5L32 47z" fill="#B8404C"/><path d="M32 47c-5 6 5 9 0 15" stroke="#8A94A3" stroke-width="2" fill="none"/><ellipse cx="26" cy="19" rx="4" ry="6.5" fill="#fff" opacity=".35"/>',
+  steam:'<path d="M22 22c-4-5 4-8 0-14M32 22c-4-5 4-8 0-14M42 22c-4-5 4-8 0-14" stroke="#9AA8BC" stroke-width="3.2" fill="none" stroke-linecap="round"/><rect x="12" y="30" width="40" height="22" rx="6" fill="#5C6B80"/><rect x="9" y="27" width="46" height="6" rx="3" fill="#44516A"/>',
+  wind:'<path d="M8 24h30a7 7 0 1 0-7-7M8 34h40a7 7 0 1 1-7 7M8 44h20" stroke="#5F9FD8" stroke-width="4" fill="none" stroke-linecap="round"/>'
+};
+const itemSvg=k=>`<svg viewBox="0 0 64 64" aria-hidden="true">${ITEMIC[k]}</svg>`;
+
+/* ---------------- content ---------------- */
+const STATIONS=['البداية','الصلب','السائل','الغاز','المختبر','التصنيف','التحوّلات','التحدّي','النتيجة'];
+const SNAME={solid:'الصلب',liquid:'السائل',gas:'الغاز',change:'التحوّلات'};
+const SADJ={solid:'صلبة',liquid:'سائلة',gas:'غازية'};
+const KEYS='أبجد';
+const LESSONS={
+  solid:{title:'الحالة الصلبة',T:-12,lead:'المادة الصلبة تحافظ على شكلها أينما وضعناها.',
+    props:[['الشكل','ثابت لا يتغيّر'],['الحجم','ثابت'],['الجسيمات','متراصّة ومرتّبة، تهتزّ في مكانها فقط']],
+    ex:['الحجر','الثلج','الخشب','القلم'],
+    analogy:'تخيّل الطلاب جالسين في مقاعدهم داخل الصف: كل طالب في مكانه، ويتحرّك حركة صغيرة فقط.',
+    extra:'قوى التجاذب بين جسيمات المادة الصلبة قوية جدًا، لذلك يصعب تغيير شكلها.',
+    check:{q:'وضعنا حجرًا داخل كأس. ماذا يحدث لشكل الحجر؟',o:['يبقى شكله كما هو','يأخذ شكل الكأس','ينتشر في الكأس كله'],a:0,why:'الصلب له شكل ثابت، فلا يأخذ شكل الإناء.',hint:'تذكّر الطلاب الجالسين في مقاعدهم: هل يغيّرون أماكنهم؟'},
+    checkAdv:{q:'لماذا لا تترك جسيمات الصلب أماكنها؟',o:['لأنها متباعدة كثيرًا','لأن التجاذب بينها قوي جدًا','لأنها ساخنة جدًا'],a:1,why:'التجاذب القوي يمسك كل جسيم في مكانه، فيهتز فقط.',hint:'فكّر: ما الذي «يمسك» الجسيمات ببعضها؟'}},
+  liquid:{title:'الحالة السائلة',T:45,lead:'السائل يجري ويُسكب، ويأخذ شكل الإناء الذي نضعه فيه.',
+    props:[['الشكل','يتغيّر حسب الإناء'],['الحجم','ثابت'],['الجسيمات','متقاربة، تنزلق وتتحرّك حول بعضها']],
+    ex:['الماء','الحليب','العصير','الزيت'],
+    analogy:'تخيّل الطلاب يمشون في الممرّ متقاربين: يتحرّكون ويغيّرون أماكنهم، لكنهم يبقون قريبين من بعضهم.',
+    extra:'لا يمكن ضغط السائل بسهولة، لأن جسيماته متقاربة.',
+    check:{q:'سكبنا الماء من زجاجة إلى صحن. ماذا تغيّر؟',o:['الشكل فقط','الحجم فقط','لم يتغيّر شيء'],a:0,why:'السائل يأخذ شكل الإناء الجديد، لكن كميته (حجمه) تبقى نفسها.',hint:'هل نقصت كمية الماء أم تغيّر شكله فقط؟'},
+    checkAdv:{q:'لماذا يمكن سكب السائل؟',o:['لأن جسيماته تنزلق فوق بعضها','لأن جسيماته لا تتحرّك','لأن جسيماته متباعدة جدًا'],a:0,why:'جسيمات السائل متقاربة لكنها حرّة الانزلاق، فيجري السائل.',hint:'تذكّر الطلاب في الممرّ: هل يستطيعون المرور بجانب بعضهم؟'}},
+  gas:{title:'الحالة الغازية',T:150,lead:'الغاز ينتشر ليملأ أيّ مكان يوضع فيه، وأغلب الغازات لا نراها.',
+    props:[['الشكل','غير ثابت'],['الحجم','غير ثابت، يملأ الإناء كله'],['الجسيمات','متباعدة جدًا، تتحرّك بسرعة في كل الاتجاهات']],
+    ex:['الهواء','بخار الماء','غاز البالون'],
+    analogy:'تخيّل الطلاب في الساحة وقت الاستراحة: يركضون بسرعة وبحرّية في كل مكان.',
+    extra:'يمكن ضغط الغاز لأن بين جسيماته مسافات كبيرة، مثل الهواء في إطار الدرّاجة.',
+    check:{q:'نفخنا هواءً في بالون. أين يذهب الهواء داخله؟',o:['يبقى في الأسفل فقط','ينتشر ويملأ البالون كله','يصبح ماءً'],a:1,why:'جسيمات الغاز تنتشر في كل الاتجاهات حتى تملأ المكان كله.',hint:'تذكّر الطلاب يركضون في الساحة: هل يقفون في زاوية واحدة؟'},
+    checkAdv:{q:'لماذا يمكن ضغط الغاز داخل حقنة مغلقة؟',o:['لأن جسيماته متراصّة','لأن بين جسيماته مسافات كبيرة','لأنه ثقيل جدًا'],a:1,why:'المسافات الكبيرة بين جسيمات الغاز تسمح بتقريبها عند الضغط.',hint:'انظر إلى نموذج الجسيمات: هل هناك فراغ بينها؟'}}
+};
+const DIAG=[
+  {q:'أيّ هذه الأشياء سائل؟',o:['الحليب','الخشب','بخار الماء'],a:0},
+  {q:'أيّ حالة تنتشر جسيماتها لتملأ الغرفة كلها؟',o:['الصلبة','السائلة','الغازية'],a:2},
+  {q:'عندما يتجمّد الماء، يتحوّل من…',o:['صلب إلى سائل','سائل إلى صلب','غاز إلى سائل'],a:1}
+];
+const ITEMS=[
+  {k:'stone',n:'حجر',s:'solid'},{k:'ice',n:'مكعّب ثلج',s:'solid'},{k:'pencil',n:'قلم رصاص',s:'solid'},
+  {k:'juice',n:'عصير برتقال',s:'liquid'},{k:'milk',n:'حليب',s:'liquid'},{k:'oil',n:'زيت الطبخ',s:'liquid'},
+  {k:'balloon',n:'الهواء داخل البالون',s:'gas'},{k:'steam',n:'بخار الماء',s:'gas'},{k:'wind',n:'الهواء الذي نتنفّسه',s:'gas'}
+];
+const SORTWHY={solid:'له شكل ثابت.',liquid:'يُسكب ويأخذ شكل الإناء.',gas:'ينتشر ويملأ المكان.'};
+const SORTHINT={solid:'هل يحافظ على شكله حتى لو نقلته من مكان إلى آخر؟',liquid:'هل يمكن سكبه؟ هل يأخذ شكل الكأس؟',gas:'هل تستطيع الإمساك به؟ هل ينتشر في كل مكان؟'};
+const CHANGES={
+  melt:{n:'الانصهار',from:'solid',to:'liquid',hot:true,d:'تتحوّل المادة من صلبة إلى سائلة عندما نسخّنها.',ex:'قطعة الشوكولاتة تذوب في يدك، ومكعّب الثلج يصبح ماءً.'},
+  evap:{n:'التبخّر',from:'liquid',to:'gas',hot:true,d:'تتحوّل المادة من سائلة إلى غازية عندما نسخّنها.',ex:'الملابس المبلّلة تجفّ تحت الشمس، والماء يغلي في الإبريق.'},
+  freeze:{n:'التجمّد',from:'liquid',to:'solid',hot:false,d:'تتحوّل المادة من سائلة إلى صلبة عندما نبرّدها.',ex:'الماء في الثلّاجة (الفريزر) يصبح مكعّبات ثلج.'},
+  cond:{n:'التكاثف',from:'gas',to:'liquid',hot:false,d:'تتحوّل المادة من غازية إلى سائلة عندما نبرّدها.',ex:'قطرات الماء على مرآة الحمّام بعد الاستحمام.'},
+  subl:{n:'التسامي',from:'solid',to:'gas',hot:true,d:'تتحوّل المادة من صلبة إلى غازية مباشرة، دون أن تصبح سائلة.',ex:'كرات النفثالين في الخزانة تصغر مع الوقت.'}
+};
+const POOL=[
+  {d:1,t:'solid',q:'أيّ هذه الأشياء مادة صلبة؟',o:['الحجر','العصير','الهواء'],a:0,w:'الحجر له شكل ثابت وحجم ثابت.'},
+  {d:1,t:'liquid',q:'الماء في الكأس مادة…',o:['صلبة','سائلة','غازية'],a:1,w:'الماء يأخذ شكل الكأس ويمكن سكبه، فهو سائل.'},
+  {d:1,t:'gas',q:'الهواء داخل البالون مادة…',o:['صلبة','سائلة','غازية'],a:2,w:'الهواء غاز ينتشر ويملأ البالون كله.'},
+  {d:1,t:'change',q:'تركنا مكعّب ثلج في الشمس. ماذا يحدث له؟',o:['يبقى كما هو','ينصهر ويصبح ماءً','يصبح حجرًا'],a:1,w:'حرارة الشمس تصهر الثلج فيتحوّل إلى ماء سائل.'},
+  {d:1,t:'liquid',q:'أيّ مادة تأخذ شكل الإناء الذي توضع فيه؟',o:['القلم','الزيت','الحجر'],a:1,w:'الزيت سائل، والسائل يأخذ شكل الإناء.'},
+  {d:2,t:'solid',q:'كيف تكون جسيمات المادة الصلبة؟',o:['متباعدة وسريعة جدًا','متراصّة ومرتّبة وتهتزّ في مكانها','تنزلق فوق بعضها'],a:1,w:'جسيمات الصلب متراصّة ومرتّبة، وتهتزّ في أماكنها فقط.'},
+  {d:2,t:'liquid',q:'سكبنا عصيرًا من كأس طويلة إلى صحن. ماذا تغيّر في العصير؟',o:['الشكل فقط','الحجم فقط','الشكل والحجم معًا'],a:0,w:'السائل يغيّر شكله حسب الإناء، لكن حجمه يبقى كما هو.'},
+  {d:2,t:'gas',q:'لماذا نشمّ رائحة الكعك من المطبخ ونحن في غرفة أخرى؟',o:['لأن الكعك صلب','لأن جسيمات الرائحة غاز ينتشر في المكان','لأن الهواء لا يتحرّك'],a:1,w:'جسيمات الغاز تتحرّك في كل الاتجاهات وتنتشر في البيت كله.'},
+  {d:2,t:'change',q:'ماذا نسمّي تحوّل الماء إلى بخار عند تسخينه؟',o:['تبخّرًا','تجمّدًا','انصهارًا'],a:0,w:'تحوّل السائل إلى غاز بالتسخين يسمّى تبخّرًا.'},
+  {d:2,t:'change',q:'وضعنا كأس ماء في الفريزر. ماذا يحدث للماء؟',o:['يتبخّر','يتجمّد ويصبح ثلجًا','يبقى سائلًا'],a:1,w:'التبريد الشديد يحوّل السائل إلى صلب، وهذا هو التجمّد.'},
+  {d:3,t:'gas',q:'أيّ حالة يمكن ضغطها بسهولة داخل حقنة مغلقة؟',o:['الصلبة','السائلة','الغازية'],a:2,w:'بين جسيمات الغاز مسافات كبيرة، فيمكن تقريبها بالضغط.'},
+  {d:3,t:'change',q:'تظهر قطرات ماء على السطح الخارجي لكأس عصير بارد. من أين جاءت؟',o:['تسرّبت من داخل الكأس','تكاثف بخار الماء الموجود في الهواء','ذاب جزء من الكأس'],a:1,w:'بخار الماء في الهواء يبرد عند ملامسة الكأس فيتكاثف قطرات.'},
+  {d:3,t:'liquid',q:'مادة حجمها ثابت وشكلها يتغيّر حسب الإناء. كيف تكون جسيماتها؟',o:['متقاربة وتنزلق حول بعضها','مرتّبة ولا تتحرّك أبدًا','متباعدة جدًا'],a:0,w:'هذه صفات السائل: جسيمات متقاربة تنزلق حول بعضها.'},
+  {d:3,t:'solid',q:'لماذا يصعب أن نغيّر شكل مسمار من الحديد بأيدينا؟',o:['لأن جسيماته متباعدة','لأن قوى التجاذب بين جسيماته قوية','لأنه خفيف'],a:1,w:'التجاذب القوي بين جسيمات الصلب يجعل شكله ثابتًا.'},
+  {d:3,t:'change',adv:1,q:'كرات النفثالين في الخزانة تصغر مع الوقت دون أن تصبح سائلة. ماذا نسمّي ذلك؟',o:['تكاثفًا','تجمّدًا','تساميًا'],a:2,w:'تحوّل الصلب إلى غاز مباشرة يسمّى تساميًا.'}
+];
+const QUIZ_N=6;
+const LAB_TASKS=[{id:'liquid',t:'سخّن الثلج حتى يصبح ماءً سائلًا'},{id:'gas',t:'استمرّ في التسخين حتى يتحوّل إلى بخار'},{id:'solid',t:'برّد البخار حتى يعود ثلجًا'}];
+
+/* ---------------- state ---------------- */
+const STORE='som-lab-v1';
+const fresh=()=>({screen:0,level:null,name:'',diag:{i:0,score:0},ls:{solid:0,liquid:0,gas:0},checks:{},
+  mastery:{solid:[],liquid:[],gas:[],change:[]},sort:{i:0,order:null,wrong:[],ok:false,first:true,okCount:0},
+  lab:{T:-12,done:{},obs:null,obsWrong:[]},changes:{seen:{},active:null},quiz:{n:0,d:1,score:0,asked:[],cur:null,ans:null},returnTo:null});
+let S=fresh();
+let P={sound:true,focus:false,big:false};
+try{const raw=localStorage.getItem(STORE);if(raw){const o=JSON.parse(raw);if(o.S)S=Object.assign(fresh(),o.S);if(o.P)P=Object.assign(P,o.P);}}catch(e){}
+let hadSave=S.screen>0;
+const save=()=>{try{localStorage.setItem(STORE,JSON.stringify({S,P}))}catch(e){}};
+
+/* ---------------- sound ---------------- */
+let AC=null;
+function tone(seq){ if(!P.sound)return; try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); const t0=AC.currentTime;
+  seq.forEach(([f,dt,dur])=>{const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t0+dt);g.gain.linearRampToValueAtTime(.12,t0+dt+.02);g.gain.exponentialRampToValueAtTime(.001,t0+dt+dur);o.connect(g).connect(AC.destination);o.start(t0+dt);o.stop(t0+dt+dur+.05)});}catch(e){} }
+const sOk=()=>tone([[660,0,.18],[880,.12,.25]]);
+const sBad=()=>tone([[300,0,.22]]);
+const sWin=()=>tone([[523,0,.2],[659,.15,.2],[784,.3,.35]]);
+
+/* ---------------- particle simulation ---------------- */
+let COL={};
+function readCols(){const cs=getComputedStyle(document.documentElement);['solid','liquid','gas','glass','beaker','ink'].forEach(k=>COL[k]=cs.getPropertyValue('--'+k).trim()||'#888');}
+class Sim{
+  constructor(cv,o){this.cv=cv;this.ctx=cv.getContext('2d');this.n=o.n||40;this.T=o.T;this.ps=[];this.prev=null;this.w=0;this.h=0;this.resize();this.init();
+    this.ro=new ResizeObserver(()=>this.resize());this.ro.observe(cv);}
+  mode(){return this.T<0?'solid':this.T<100?'liquid':'gas'}
+  resize(){const r=this.cv.getBoundingClientRect();const w=Math.max(120,r.width),h=Math.max(100,r.height);if(Math.abs(w-this.w)<1&&Math.abs(h-this.h)<1)return;
+    const dpr=Math.min(2,window.devicePixelRatio||1);const sx=this.w?w/this.w:1,sy=this.h?h/this.h:1;
+    this.cv.width=Math.round(w*dpr);this.cv.height=Math.round(h*dpr);this.ctx.setTransform(dpr,0,0,dpr,0,0);
+    for(const p of this.ps){p.x*=sx;p.y*=sy}
+    this.w=w;this.h=h;const pad=Math.max(8,w*.05);this.box={l:pad,r:w-pad,t:pad*1.2,b:h-pad};
+    const bw=this.box.r-this.box.l,bh=this.box.b-this.box.t;this.R=Math.max(3.5,Math.min(bw,bh*1.25)/(Math.sqrt(this.n)*3.3));
+    this.makeHomes();if(this.mode()==='solid')this.assignHomes();}
+  makeHomes(){const R=this.R,s=R*2.25,B=this.box;const cols=Math.max(3,Math.min(Math.floor((B.r-B.l)/s)-1,Math.ceil(Math.sqrt(this.n*1.3))));
+    this.cols=cols;const x0=(B.l+B.r)/2-(cols-1)*s/2;this.homes=[];for(let i=0;i<this.n;i++){const c=i%cols,rw=Math.floor(i/cols);this.homes.push({x:x0+c*s,y:B.b-R-1-rw*s})}}
+  init(){const B=this.box,m=this.mode();for(let i=0;i<this.n;i++){const p={x:0,y:0,vx:(Math.random()-.5),vy:(Math.random()-.5),h:this.homes[i]};
+      if(m==='gas'){p.x=B.l+this.R+Math.random()*(B.r-B.l-2*this.R);p.y=B.t+this.R+Math.random()*(B.b-B.t-2*this.R);p.vx*=this.R*.6;p.vy*=this.R*.6}
+      else{p.x=p.h.x+(Math.random()-.5);p.y=p.h.y}this.ps.push(p)}this.prev=m;}
+  assignHomes(){const ps=[...this.ps].sort((a,b)=>b.y-a.y),c=this.cols;for(let r=0;r*c<ps.length;r++){const row=ps.slice(r*c,r*c+c).sort((a,b)=>a.x-b.x);const hs=this.homes.slice(r*c,r*c+c).sort((a,b)=>a.x-b.x);row.forEach((p,i)=>p.h=hs[i])}}
+  step(){const m=this.mode(),R=this.R,B=this.box,ps=this.ps,n=ps.length;
+    if(m!==this.prev){if(m==='solid')this.assignHomes();if(m==='gas')for(const p of ps){p.vy-=R*.25*Math.random();p.vx+=(Math.random()-.5)*R*.3}this.prev=m}
+    if(m==='solid'){const j=R*(.025+.09*Math.max(0,Math.min(1,(this.T+20)/20)));
+      for(const p of ps){p.vx+=(p.h.x-p.x)*.07;p.vy+=(p.h.y-p.y)*.07;p.vx*=.78;p.vy*=.78;p.vx+=(Math.random()-.5)*j;p.vy+=(Math.random()-.5)*j}}
+    else if(m==='liquid'){const g=R*.02,k=R*(.03+.07*(this.T/100));
+      for(const p of ps){p.vy+=g;p.vx+=(Math.random()-.5)*k;p.vy+=(Math.random()-.5)*k;p.vx*=.95;p.vy*=.95}
+      for(let i=0;i<n;i++)for(let q=i+1;q<n;q++){const a=ps[i],b=ps[q];const dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;if(d2>9*R*R||d2<1e-6)continue;const d=Math.sqrt(d2);
+        if(d<2*R){const f=(2*R-d)/d*.5;a.x-=dx*f*.5;a.y-=dy*f*.5;b.x+=dx*f*.5;b.y+=dy*f*.5;const rv=((b.vx-a.vx)*dx+(b.vy-a.vy)*dy)/d2;if(rv<0){a.vx+=rv*dx*.5;a.vy+=rv*dy*.5;b.vx-=rv*dx*.5;b.vy-=rv*dy*.5}}
+        else{const f=.0025;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f}}}
+    else{const tgt=R*(.22+.1*Math.min(3,(this.T-100)/25));
+      for(const p of ps){const sp=Math.hypot(p.vx,p.vy);if(sp<1e-3){p.vx=(Math.random()-.5)*tgt;p.vy=(Math.random()-.5)*tgt;continue}const f=1+(tgt/sp-1)*.06;p.vx*=f;p.vy*=f}
+      for(let i=0;i<n;i++)for(let q=i+1;q<n;q++){const a=ps[i],b=ps[q];const dx=b.x-a.x,dy=b.y-a.y,d2=dx*dx+dy*dy;if(d2>4*R*R||d2<1e-6)continue;const d=Math.sqrt(d2);
+        const rv=((b.vx-a.vx)*dx+(b.vy-a.vy)*dy)/d2;if(rv<0){a.vx+=rv*dx;a.vy+=rv*dy;b.vx-=rv*dx;b.vy-=rv*dy}const f=(2*R-d)/d*.5;a.x-=dx*f*.5;a.y-=dy*f*.5;b.x+=dx*f*.5;b.y+=dy*f*.5}}
+    const e=m==='gas'?1:.4;
+    for(const p of ps){p.x+=p.vx;p.y+=p.vy;
+      if(p.x<B.l+R){p.x=B.l+R;p.vx=Math.abs(p.vx)*e} if(p.x>B.r-R){p.x=B.r-R;p.vx=-Math.abs(p.vx)*e}
+      if(p.y<B.t+R){p.y=B.t+R;p.vy=Math.abs(p.vy)*e} if(p.y>B.b-R){p.y=B.b-R;p.vy=-Math.abs(p.vy)*e}}}
+  draw(){const c=this.ctx,B=this.box,R=this.R,m=this.mode();c.clearRect(0,0,this.w,this.h);
+    const rr=Math.min(16,R*2);c.beginPath();c.moveTo(B.l-3,B.t-4);c.lineTo(B.l-3,B.b-rr);c.quadraticCurveTo(B.l-3,B.b+3,B.l+rr,B.b+3);c.lineTo(B.r-rr,B.b+3);c.quadraticCurveTo(B.r+3,B.b+3,B.r+3,B.b-rr);c.lineTo(B.r+3,B.t-4);
+    c.fillStyle=COL.beaker;c.fill();c.lineWidth=3;c.strokeStyle=COL.glass;c.stroke();
+    c.beginPath();c.moveTo(B.l-8,B.t-4);c.lineTo(B.r+8,B.t-4);c.lineWidth=5;c.lineCap='round';c.stroke();c.lineCap='butt';
+    c.fillStyle=COL[m];for(const p of this.ps){c.beginPath();c.arc(p.x,p.y,R,0,6.2832);c.fill()}
+    c.fillStyle='rgba(255,255,255,.38)';for(const p of this.ps){c.beginPath();c.arc(p.x-R*.32,p.y-R*.32,R*.32,0,6.2832);c.fill()}}
+  destroy(){this.ro.disconnect()}
+}
+let SIMS=[],raf=0,frame=0;
+const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+function loop(){frame++;if(frame%60===1)readCols();for(const s of SIMS){s.step();if(RM.matches&&frame%2)continue;s.draw()}raf=SIMS.length?requestAnimationFrame(loop):0}
+function addSim(cv,o){const s=new Sim(cv,o);SIMS.push(s);if(!raf){readCols();raf=requestAnimationFrame(loop)}return s}
+function clearSims(){SIMS.forEach(s=>s.destroy());SIMS=[];if(raf){cancelAnimationFrame(raf);raf=0}}
+
+/* ---------------- helpers ---------------- */
+const $=s=>document.querySelector(s);
+const stage=$('#stage');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const nm=()=>S.name?('يا '+esc(S.name)):'';
+function optsHTML(o,act,state){/* state: {chosen:Set of wrong, correct:idx|null, lock:bool} */
+  return `<div class="opts" role="group">${o.map((t,i)=>{let cls='',mk='',dis=state.lock;
+    if(state.correct===i){cls='is-ok';mk=`<span class="mk" style="color:var(--ok)">${IC.check}</span>`;dis=true}
+    else if(state.wrong&&state.wrong.includes(i)){cls='is-bad';mk=`<span class="mk" style="color:var(--bad)">${IC.cross}</span>`;dis=true}
+    return `<button class="opt ${cls}" type="button" data-act="${act}" data-v="${i}" ${dis?'disabled':''}><span class="k">${KEYS[i]}</span><span class="speak">${esc(t)}</span>${mk}</button>`}).join('')}</div>`}
+function fb(kind,title,body){return `<div class="fb ${kind}" role="status">${kind==='ok'?IC.ok:kind==='bad'?IC.bad:IC.bulb}<div><strong class="speak">${title}</strong><span class="speak">${body}</span></div></div>`}
+
+/* ---------------- screens ---------------- */
+const SCREENS=[
+/* 0 welcome */
+{st:0,next:'ابدأ الرحلة',
+ render:()=>`<section class="card">
+  <div class="hero">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <span class="eyebrow">علوم · الصفوف 3–6 · نحو 20 دقيقة</span>
+      <h1 class="speak">الماء نفسه، ثلاث حالات!</h1>
+      <p class="lead speak">الثلج والماء والبخار مادة واحدة. في هذه الرحلة ستكتشف لماذا تختلف، وماذا يحدث داخلها.</p>
+      <ul class="goals">
+        <li><span class="gi">1</span><span class="speak">أميّز الصلب والسائل والغاز من الشكل والحجم والجسيمات.</span></li>
+        <li><span class="gi">2</span><span class="speak">أجرّب بنفسي في المختبر: أسخّن وأبرّد وأراقب.</span></li>
+        <li><span class="gi">3</span><span class="speak">أفسّر كيف تتحوّل المادة من حالة إلى أخرى.</span></li>
+      </ul>
+      <div class="field"><label for="nameIn">ما اسمك؟ (اختياري)</label><input id="nameIn" maxlength="24" autocomplete="off" placeholder="اكتب اسمك هنا" value="${esc(S.name)}"></div>
+      ${hadSave?`<div class="resume"><span>لديك رحلة محفوظة عند محطة «${STATIONS[SCREENS[savedScreen].st]}».</span><button class="btn btn-soft" type="button" data-act="resume">أكمل من حيث توقّفت</button></div>`:''}
+    </div>
+    <div class="trio" aria-label="الثلج يصبح ماءً ثم بخارًا">
+      <figure class="st-solid">${ILLO.solid}<figcaption class="colored">صلب</figcaption></figure>
+      <span class="arr">${IC.arrowL}</span>
+      <figure class="st-liquid">${ILLO.liquid}<figcaption class="colored">سائل</figcaption></figure>
+      <span class="arr">${IC.arrowL}</span>
+      <figure class="st-gas">${ILLO.gas}<figcaption class="colored">غاز</figcaption></figure>
+    </div>
+  </div></section>`,
+ can:()=>true,
+ beforeNext:()=>{const v=$('#nameIn');const n=v?v.value.trim().slice(0,24):S.name;if(hadSave){S=fresh();hadSave=false}S.name=n}},
+/* 1 diagnostic */
+{st:0,
+ render:()=>{const i=S.diag.i;if(i>=DIAG.length)return `<section class="card"><span class="eyebrow">قبل أن نبدأ</span><h2 class="speak">شكرًا لك! جهّزنا مسارك.</h2><p class="lead speak">اضغط «التالي» لترى المسار المناسب لك.</p></section>`;
+  const d=DIAG[i];return `<section class="card">
+   <div class="qmeta"><span class="eyebrow">قبل أن نبدأ: لنتعرّف على ما تعرفه</span><div class="dots" aria-label="السؤال ${i+1} من 3">${DIAG.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('')}</div></div>
+   <p class="muted speak">لا تقلق، هذه ليست علامة. اختر ما تظنّه صحيحًا.</p>
+   <p class="q speak">${d.q}</p>${optsHTML(d.o,'diag',{lock:false})}</section>`},
+ can:()=>S.diag.i>=DIAG.length, hint:'أجب عن الأسئلة الثلاثة'},
+/* 2 path */
+{st:0,
+ render:()=>`<section class="card">
+  <span class="eyebrow">مسارك</span>
+  <h2 class="speak">${S.diag.score>=2?'رائع! تعرف الكثير.':'بداية جميلة!'} ${nm()}</h2>
+  <p class="lead speak">أجبت عن ${S.diag.score} من 3. اخترنا لك المسار المناسب، ويمكنك تغييره.</p>
+  <div class="paths">
+   <button class="pathc" type="button" data-act="level" data-v="1" aria-pressed="${S.level===1}"><span class="badge">${S.diag.score<2?'مقترح لك':'خطوة بخطوة'}</span><h3>مسار المستكشف</h3><ul><li>أمثلة وتشبيهات كثيرة</li><li>أسئلة تبدأ من السهل</li><li>أربعة تحوّلات أساسية</li></ul></button>
+   <button class="pathc" type="button" data-act="level" data-v="2" aria-pressed="${S.level===2}"><span class="badge">${S.diag.score>=2?'مقترح لك':'تحدٍّ أكبر'}</span><h3>مسار العالِم الصغير</h3><ul><li>معلومة إضافية في كل درس</li><li>أسئلة تفكير أعمق</li><li>تحوّل خامس: التسامي</li></ul></button>
+  </div></section>`,
+ can:()=>!!S.level},
+/* 3-5 lessons */
+...['solid','liquid','gas'].map((k,ix)=>({st:1+ix,key:k,
+ render:()=>lessonHTML(k), mount:()=>lessonMount(k),
+ can:()=>!!(S.checks[k]&&S.checks[k].ok), hint:'أكمل الخطوات الثلاث في هذه الشاشة'})),
+/* 6 lab */
+{st:4,render:()=>labHTML(),mount:()=>labMount(),can:()=>labDone(),hint:'أنجز مهام المختبر'},
+/* 7 sort */
+{st:5,render:()=>sortHTML(),can:()=>S.sort.i>=ITEMS.length,hint:'صنّف الأشياء التسعة'},
+/* 8 changes */
+{st:6,render:()=>changesHTML(),can:()=>changeKeys().every(k=>S.changes.seen[k]),hint:'اضغط كل سهم لتكتشف التحوّل'},
+/* 9 quiz */
+{st:7,render:()=>quizHTML(),can:()=>S.quiz.n>=QUIZ_N,hint:'أجب عن أسئلة التحدّي الستة',next:'اعرض نتيجتي'},
+/* 10 report */
+{st:8,render:()=>reportHTML(),can:()=>false,noNext:true}
+];
+let savedScreen=S.screen;
+
+/* lesson */
+function lessonHTML(k){const L=LESSONS[k],step=S.ls[k],adv=S.level===2;const ck=S.checks[k]||{wrong:[],ok:false};const Q=adv?L.checkAdv:L.check;
+  const stepsBar=`<div class="steps" aria-label="الخطوة ${Math.min(step,2)+1} من 3">${[0,1,2].map(i=>`<i class="${i<=step?'on':''}"></i>`).join('')}<span style="margin-inline-start:6px">${['أتعرّف','أنظر إلى الداخل','أختبر فهمي'][Math.min(step,2)]}</span></div>`;
+  let body='';
+  if(step===0){body=`<p class="lead speak">${L.lead}</p>
+    <ul class="props">${L.props.map(([a,b])=>`<li><span class="pk">${a}</span><span class="speak">${b}</span></li>`).join('')}</ul>
+    <div><p class="muted" style="margin-bottom:6px">أمثلة من حياتنا:</p><div class="chips">${L.ex.map(e=>`<span class="chip">${e}</span>`).join('')}</div></div>
+    <div><button class="btn btn-primary" type="button" data-act="lstep">${IC.eye}انظر إلى الجسيمات</button></div>`}
+  else if(step===1){body=`<p class="lead speak">لو كبّرنا المادة كثيرًا جدًا، سنرى جسيمات صغيرة. انظر كيف تتحرّك.</p>
+    <div class="analogy"><b>تشبيه يساعدك:</b> <span class="speak">${L.analogy}</span></div>
+    ${adv?`<div class="extra">${IC.bulb}<span class="speak"><b>للعالِم الصغير:</b> ${L.extra}</span></div>`:''}
+    <div><button class="btn btn-primary" type="button" data-act="lstep">اختبر فهمك</button></div>`}
+  else{body=`<p class="q speak">${Q.q}</p>${optsHTML(Q.o,'check',{correct:ck.ok?Q.a:null,wrong:ck.wrong,lock:ck.ok})}
+    ${ck.ok?fb('ok',ck.wrong.length?'أحسنت، وصلت إليها!':'إجابة صحيحة! '+nm(),Q.why):ck.wrong.length?fb('bad','لنفكّر بطريقة أخرى',Q.hint+' '+`<br><span class="muted">${L.analogy}</span>`):''}`}
+  return `<section class="card st-${k}">
+   <div class="qmeta"><span class="eyebrow colored"><span class="dot"></span>الدرس ${['الأول','الثاني','الثالث'][['solid','liquid','gas'].indexOf(k)]}</span>${stepsBar}</div>
+   <h2 class="colored speak">${L.title}</h2>
+   <div class="lesson">
+     <div class="vis">
+       <div class="pane tinted">${ILLO[k]}<span class="cap">ما نراه</span></div>
+       ${step>=1?`<div class="pane tinted"><canvas id="lsim" aria-label="نموذج الجسيمات: ${L.props[2][1]}" role="img"></canvas><span class="cap">من الداخل: الجسيمات</span></div>`:`<div class="pane ph">${IC.eye.replace('<svg','<svg width="32" height="32"')}<span>ماذا يوجد في الداخل؟</span></div>`}
+     </div>
+     <div style="display:flex;flex-direction:column;gap:16px;min-width:0">${body}</div>
+   </div></section>`}
+function lessonMount(k){const cv=$('#lsim');if(cv)addSim(cv,{n:k==='gas'?22:30,T:LESSONS[k].T})}
+
+/* lab */
+function labMode(T){return T<0?'solid':T<100?'liquid':'gas'}
+function labTaskIdx(){return LAB_TASKS.findIndex(t=>!S.lab.done[t.id])}
+function labDone(){return labTaskIdx()===-1&&(S.level!==2||S.lab.obs===0)}
+let labSim=null,labHold=null;
+function labHTML(){return `<section class="card">
+  <span class="eyebrow">المختبر</span><h2 class="speak">سخّن وبرّد بنفسك</h2>
+  <p class="lead speak">حرّك المؤشّر لتغيّر درجة حرارة الماء، وراقب الجسيمات.</p>
+  <div class="lab">
+    <div class="labview">
+      <canvas id="labcv" role="img" aria-label="وعاء فيه جسيمات الماء"></canvas>
+      <div class="thermo" aria-hidden="true"><div class="tube"><i id="tfill"></i></div><div class="bulb"></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div class="row" style="justify-content:space-between"><span class="temp" id="tval"></span><span id="sbadge"></span></div>
+      <div><label for="tslider" class="sr">درجة الحرارة</label><input type="range" id="tslider" class="slider" min="-20" max="140" step="1" value="${S.lab.T}" dir="ltr">
+        <div class="scale"><span>-20°</span><span>0° يتجمّد</span><span>100° يغلي</span><span>140°</span></div></div>
+      <div><h3 style="margin-bottom:8px">مهامّك</h3><ul class="tasks" id="ltasks"></ul></div>
+      <div id="lobs"></div>
+    </div>
+  </div></section>`}
+function labMount(){labSim=addSim($('#labcv'),{n:36,T:S.lab.T});const sl=$('#tslider');sl.addEventListener('input',()=>{S.lab.T=+sl.value;labSim.T=S.lab.T;labUpdate()});labUpdate(true)}
+function labUpdate(first){const T=S.lab.T,m=labMode(T);
+  $('#tval').innerHTML=`<span dir="ltr">${T}°</span><span>م</span>`;$('#tfill').style.height=((T+20)/160*100)+'%';
+  $('#sbadge').innerHTML=`<span class="statebadge st-${m}">${m==='solid'?'ثلج (صلب)':m==='liquid'?'ماء (سائل)':'بخار (غاز)'}</span>`;
+  const ti=labTaskIdx();
+  if(ti>=0&&LAB_TASKS[ti].id===m){clearTimeout(labHold);labHold=setTimeout(()=>{if(labMode(S.lab.T)===m&&labTaskIdx()===ti){S.lab.done[m]=true;sOk();save();labUpdate();chrome()}},700)}
+  if(first||!labUpdate.last||labUpdate.last!==JSON.stringify([S.lab.done,S.lab.obs,S.lab.obsWrong])){labUpdate.last=JSON.stringify([S.lab.done,S.lab.obs,S.lab.obsWrong]);
+    const cur=labTaskIdx();
+    $('#ltasks').innerHTML=LAB_TASKS.map((t,i)=>`<li class="${S.lab.done[t.id]?'done':i===cur?'cur':''}"><span class="tk">${S.lab.done[t.id]?IC.check:i+1}</span><span class="speak">${t.t}</span></li>`).join('');
+    let o='';if(cur===-1){if(S.level===2){const Q={q:'ماذا يحدث لجسيمات الماء كلما ارتفعت درجة الحرارة؟',o:['تتحرّك أسرع وتتباعد','تبطؤ وتتقارب','لا يتغيّر شيء'],a:0};
+        o=`<p class="q speak" style="font-size:1.15rem">${Q.q}</p>${optsHTML(Q.o,'obs',{correct:S.lab.obs===0?0:null,wrong:S.lab.obsWrong,lock:S.lab.obs===0})}${S.lab.obs===0?fb('ok','ملاحظة عالِم!','الحرارة تعطي الجسيمات طاقة، فتتحرّك أسرع وتبتعد عن بعضها.'):S.lab.obsWrong.length?fb('bad','راقب مرة أخرى','حرّك المؤشّر ببطء من البارد إلى الساخن، وانظر إلى سرعة الجسيمات.'):''}`}
+      else o=fb('ok','أنجزت كل المهام!','لاحظت؟ كلما سخّنا الماء تحرّكت جسيماته أسرع وابتعدت عن بعضها، وكلما برّدناه تباطأت وتقاربت.')}
+    $('#lobs').innerHTML=o}}
+
+/* sort */
+function sortHTML(){const so=S.sort;if(!so.order){so.order=shuffle(ITEMS.map((_,i)=>i))}
+  if(so.i>=ITEMS.length){const c=so.okCount;return `<section class="card"><span class="eyebrow">التصنيف</span><h2 class="speak">صنّفت الأشياء التسعة!</h2>
+    <p class="lead speak">أصبت من المحاولة الأولى في ${c} من 9.</p>
+    <div class="tally">${['solid','liquid','gas'].map(s=>`<span class="statebadge st-${s}"><span style="width:26px;display:inline-flex">${PAT[s]}</span>${SNAME[s]}: ${ITEMS.filter(x=>x.s===s).map(x=>x.n).join('، ')}</span>`).join('')}</div></section>`}
+  const it=ITEMS[so.order[so.i]];
+  return `<section class="card">
+   <div class="qmeta"><span class="eyebrow">التصنيف</span><span class="counter muted">الشيء ${so.i+1} من 9</span></div>
+   <h2 class="speak">في أيّ حالة هذا الشيء؟</h2>
+   <div class="sortitem">${itemSvg(it.k)}<b class="speak">${it.n}</b></div>
+   <div class="bins">${['solid','liquid','gas'].map(s=>`<button class="bin st-${s}" type="button" data-act="sort" data-v="${s}" ${so.ok||so.wrong.includes(s)?'disabled':''}>${PAT[s]}${SNAME[s]}</button>`).join('')}</div>
+   ${so.ok?fb('ok',so.first?'صحيح! ':'أحسنت!',`${it.n}: مادة ${SADJ[it.s]}، ${SORTWHY[it.s]}`)+`<div><button class="btn btn-primary" type="button" data-act="sortNext">${so.i+1<ITEMS.length?'الشيء التالي':'انتهيت'}</button></div>`
+     :so.wrong.length?fb('bad','فكّر مرة أخرى',SORTHINT[it.s]):''}
+  </section>`}
+
+/* changes */
+function changeKeys(){return S.level===2?['melt','evap','freeze','cond','subl']:['melt','evap','freeze','cond']}
+function changesHTML(){const a=S.changes.active,seen=S.changes.seen;const ks=changeKeys();
+  const arw=k=>{const c=CHANGES[k];return `<button class="arw ${c.hot?'hot':'cold'} ${seen[k]?'seen':''}" type="button" data-act="chg" data-v="${k}" aria-pressed="${a===k}">${c.hot?IC.arrowL:IC.arrowR}${c.n}</button>`};
+  const node=s=>`<div class="node st-${s}">${ILLO[s]}<span>${SNAME[s]}</span></div>`;
+  const C=a&&CHANGES[a];
+  return `<section class="card">
+   <div class="qmeta"><span class="eyebrow">التحوّلات</span><span class="counter muted">اكتشفت ${ks.filter(k=>seen[k]).length} من ${ks.length}</span></div>
+   <h2 class="speak">كيف تتحوّل المادة؟</h2>
+   <p class="lead speak">التسخين (السهم الأحمر) والتبريد (السهم الأزرق) يغيّران حالة المادة. اضغط كل سهم.</p>
+   <div class="cmap">
+     ${S.level===2?`<div class="subl">${arw('subl')}</div>`:''}
+     ${node('solid')}<div class="arrows">${arw('melt')}${arw('freeze')}</div>${node('liquid')}<div class="arrows">${arw('evap')}${arw('cond')}</div>${node('gas')}
+   </div>
+   <div class="cdetail" aria-live="polite">${C?`<div class="fromto"><span class="statebadge st-${C.from}">${SNAME[C.from]}</span>${IC.arrowL.replace('<svg','<svg width="22" height="22"')}<span class="statebadge st-${C.to}">${SNAME[C.to]}</span><span>= ${C.n}</span></div>
+     <p class="speak">${C.d}</p><p class="muted speak"><b>من حياتنا:</b> ${C.ex}</p>`:`<p class="muted">اختر سهمًا لترى ماذا يحدث.</p>`}</div>
+  </section>`}
+
+/* quiz */
+function pickQ(){const q=S.quiz;const avail=POOL.map((x,i)=>i).filter(i=>!q.asked.includes(i)&&(S.level===2||!POOL[i].adv));
+  let best=null,bd=9;for(const i of avail){const dd=Math.abs(POOL[i].d-q.d);if(dd<bd){bd=dd}}
+  const cand=avail.filter(i=>Math.abs(POOL[i].d-q.d)===bd);
+  const score=i=>{const m=avg(S.mastery[POOL[i].t]);return (m==null?.5:m)+Math.random()*.35};
+  cand.sort((x,y)=>score(x)-score(y));return cand[0]}
+function quizHTML(){const q=S.quiz;
+  if(q.n>=QUIZ_N)return `<section class="card"><span class="eyebrow">التحدّي</span><h2>انتهى التحدّي!</h2><p class="lead">اضغط «اعرض نتيجتي».</p></section>`;
+  if(q.cur==null){q.cur=pickQ();save()}
+  const Q=POOL[q.cur],an=q.ans!=null;const okA=an&&q.ans===Q.a;
+  const lvName=['','سهل','متوسّط','متقدّم'][Q.d];
+  return `<section class="card">
+   <div class="qmeta"><span class="eyebrow">التحدّي الختامي · السؤال ${q.n+1} من ${QUIZ_N}</span>
+     <span class="lvl" title="مستوى السؤال يتغيّر حسب إجاباتك">مستوى السؤال: ${lvName}<span style="display:inline-flex;gap:3px;align-items:flex-end">${[1,2,3].map(i=>`<i class="${i<=Q.d?'on':''}"></i>`).join('')}</span></span></div>
+   <div class="dots" aria-hidden="true">${Array.from({length:QUIZ_N},(_,i)=>`<i class="${i<=q.n?'on':''}"></i>`).join('')}</div>
+   <p class="q speak">${Q.q}</p>
+   ${optsHTML(Q.o,'quiz',{correct:an?Q.a:null,wrong:an&&!okA?[q.ans]:[],lock:an})}
+   ${an?(okA?fb('ok','إجابة صحيحة!'+(Q.d<3?' السؤال التالي أصعب قليلًا.':''),Q.w):fb('bad','ليست هذه',Q.w+' سنجرّب سؤالًا أسهل قليلًا.'))+`<div><button class="btn btn-primary" type="button" data-act="quizNext">${q.n+1<QUIZ_N?'السؤال التالي':'إنهاء التحدّي'}</button></div>`:''}
+  </section>`}
+
+/* report */
+function reportHTML(){const sc=S.quiz.score,stars=sc>=5?3:sc>=3?2:1;
+  const rows=['solid','liquid','gas','change'].map(t=>{const m=avg(S.mastery[t]);return {t,m:m==null?0:m}});
+  const weak=rows.filter(r=>r.m<.6);
+  const col={solid:'st-solid',liquid:'st-liquid',gas:'st-gas',change:''};
+  return `<section class="card">
+   <div class="cert"><span class="eyebrow">النتيجة</span><div class="stars" aria-label="${stars} نجوم من 3">${[1,2,3].map(i=>IC.star(i<=stars)).join('')}</div>
+     <h2 class="speak">${stars===3?'عالِم حقيقي!':stars===2?'عمل رائع!':'بداية موفّقة!'} ${nm()}</h2>
+     <p class="lead speak">أجبت عن ${sc} من ${QUIZ_N} في التحدّي، وأكملت رحلة حالات المادة ${S.level===2?'في مسار العالِم الصغير':'في مسار المستكشف'}.</p></div>
+   <div><h3 style="margin-bottom:10px">ماذا أتقنت؟</h3><div class="mast">${rows.map(r=>`<div class="mrow ${col[r.t]}" ${r.t==='change'?'style="--c:var(--primary)"':''}><span class="nm">${SNAME[r.t]}</span><span class="bar"><i style="width:${Math.round(r.m*100)}%"></i></span><span class="pct">${Math.round(r.m*100)}%</span></div>`).join('')}</div>
+   <p class="muted" style="margin-top:8px">تُحسب من إجاباتك الأولى في الدروس والتصنيف والتحدّي.</p></div>
+   ${weak.length?fb('info','اقتراح لك',`راجع ${weak.map(w=>'«'+SNAME[w.t]+'»').join(' و')} لتصبح أقوى.`)+`<div class="recs">${weak.map(w=>`<button class="btn btn-soft" type="button" data-act="review" data-v="${w.t}">راجع ${SNAME[w.t]}</button>`).join('')}</div>`:fb('ok','أتقنت كل الحالات!','جرّب مسار العالِم الصغير إن لم تجرّبه، أو اشرح لصديقك ماذا يحدث للجسيمات عند التسخين.')}
+   <div class="row"><button class="btn btn-ghost" type="button" data-act="restart">ابدأ رحلة جديدة</button></div>
+  </section>`}
+
+/* ---------------- actions ---------------- */
+const ACT={
+  resume(){go(savedScreen)},
+  diag(v){const d=DIAG[S.diag.i];if(+v===d.a)S.diag.score++;S.diag.i++;tone([[560,0,.12]]);
+    if(S.diag.i>=DIAG.length){S.level=S.diag.score>=2?2:1}render();if(S.diag.i>=DIAG.length)go(2)},
+  level(v){S.level=+v;S.quiz.d=S.level;render()},
+  lstep(){const k=SCREENS[S.screen].key;S.ls[k]=Math.min(2,S.ls[k]+1);render();focusFirst()},
+  check(v){const k=SCREENS[S.screen].key,L=LESSONS[k],Q=S.level===2?L.checkAdv:L.check;const ck=S.checks[k]||(S.checks[k]={wrong:[],ok:false});
+    if(+v===Q.a){ck.ok=true;sOk();if(!ck.wrong.length)S.mastery[k].push(1)}else{if(!ck.wrong.length)S.mastery[k].push(0);ck.wrong.push(+v);sBad()}render()},
+  obs(v){if(+v===0){S.lab.obs=0;sOk()}else{S.lab.obsWrong.push(+v);sBad()}save();labUpdate();chrome()},
+  sort(v){const so=S.sort,it=ITEMS[so.order[so.i]];if(v===it.s){so.ok=true;sOk();if(so.first){so.okCount++;S.mastery[it.s].push(1)}}else{if(so.first)S.mastery[it.s].push(0);so.first=false;so.wrong.push(v);sBad()}render()},
+  sortNext(){const so=S.sort;so.i++;so.ok=false;so.first=true;so.wrong=[];if(so.i>=ITEMS.length)sWin();render();focusFirst()},
+  chg(v){S.changes.active=v;const was=S.changes.seen[v];S.changes.seen[v]=true;if(!was)tone([[620,0,.12]]);render();const b=stage.querySelector(`[data-act="chg"][data-v="${v}"]`);b&&b.focus()},
+  quiz(v){const q=S.quiz,Q=POOL[q.cur];q.ans=+v;const ok=+v===Q.a;S.mastery[Q.t].push(ok?1:0);if(ok){q.score++;q.d=Math.min(3,q.d+1);sOk()}else{q.d=Math.max(1,q.d-1);sBad()}render()},
+  quizNext(){const q=S.quiz;q.asked.push(q.cur);q.n++;q.cur=null;q.ans=null;if(q.n>=QUIZ_N){sWin();go(10)}else{render();focusFirst()}},
+  review(v){S.returnTo=10;if(v==='change'){S.changes.active=null;go(8)}else{const k=v;S.ls[k]=1;S.checks[k]={wrong:[],ok:false};go(3+['solid','liquid','gas'].indexOf(k))}},
+  restart(){const keep=S.name;S=fresh();S.name=keep;hadSave=false;go(0)}
+};
+stage.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;ACT[b.dataset.act]&&ACT[b.dataset.act](b.dataset.v,b)});
+
+/* ---------------- navigation & chrome ---------------- */
+function go(i){i=Math.max(0,Math.min(SCREENS.length-1,i));if(i===9&&S.quiz.n===0&&S.quiz.cur==null)S.quiz.d=S.level||1;S.screen=i;render();window.scrollTo({top:0,behavior:RM.matches?'auto':'smooth'});stage.focus({preventScroll:true})}
+function focusFirst(){const b=stage.querySelector('.opt:not(:disabled),.bin:not(:disabled),[data-act="sortNext"],[data-act="quizNext"],[data-act="lstep"]');b&&b.focus({preventScroll:true})}
+function render(){clearSims();labSim=null;labUpdate.last=null;const sc=SCREENS[S.screen];stage.innerHTML=sc.render();sc.mount&&sc.mount();chrome();save()}
+function chrome(){const sc=SCREENS[S.screen];const st=sc.st;
+  $('#stLabel').innerHTML=`المحطة: <b>${STATIONS[st]}</b>${S.level?` · ${S.level===2?'العالِم الصغير':'المستكشف'}`:''}`;
+  $('#stCount').textContent=`${st+1} / ${STATIONS.length}`;
+  const pct=Math.round(st/(STATIONS.length-1)*100);$('#railFill').style.width=pct+'%';$('#rail').setAttribute('aria-valuenow',pct);
+  const can=sc.can();const bn=$('#bNext');bn.hidden=!!sc.noNext;bn.disabled=!can;
+  bn.firstChild.textContent=(S.returnTo!=null&&S.screen!==10)?'عودة إلى النتيجة':(sc.next||'التالي');
+  $('#bBack').disabled=S.screen===0||S.returnTo!=null;
+  $('#navHint').textContent=can?'':(sc.hint||'');}
+$('#bNext').addEventListener('click',()=>{const sc=SCREENS[S.screen];if(!sc.can())return;sc.beforeNext&&sc.beforeNext();
+  if(S.returnTo!=null){const r=S.returnTo;S.returnTo=null;go(r);return}go(S.screen+1)});
+$('#bBack').addEventListener('click',()=>{if(S.screen===2){S.diag={i:0,score:0};go(1);return}go(S.screen-1)});
+
+/* tools */
+function applyPrefs(){const h=document.documentElement;h.classList.toggle('focus',P.focus);h.classList.toggle('big',P.big);
+  $('#tFocus').setAttribute('aria-pressed',P.focus);$('#tBig').setAttribute('aria-pressed',P.big);$('#tSound').setAttribute('aria-pressed',P.sound)}
+$('#tFocus').onclick=()=>{P.focus=!P.focus;applyPrefs();save()};
+$('#tBig').onclick=()=>{P.big=!P.big;applyPrefs();save()};
+$('#tSound').onclick=()=>{P.sound=!P.sound;applyPrefs();save();if(P.sound)sOk()};
+const synth=window.speechSynthesis;
+if(!synth||typeof SpeechSynthesisUtterance==='undefined')$('#tSpeak').hidden=true;
+$('#tSpeak').onclick=()=>{try{if(synth.speaking){synth.cancel();return}const txt=[...stage.querySelectorAll('h1,h2,.speak')].map(e=>e.textContent.trim()).filter(Boolean).join('. ');
+  const u=new SpeechSynthesisUtterance(txt);u.lang='ar-SA';u.rate=.9;const v=synth.getVoices().find(v=>/^ar/i.test(v.lang));if(v)u.voice=v;synth.speak(u)}catch(e){}};
+const sheet=$('#sheet');
+$('#tTeacher').onclick=()=>{sheet.hidden=false;$('#shClose').focus()};
+$('#shClose').onclick=()=>{sheet.hidden=true;$('#tTeacher').focus()};
+sheet.addEventListener('click',e=>{if(e.target===sheet){sheet.hidden=true}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!sheet.hidden){sheet.hidden=true;$('#tTeacher').focus()}});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readCols);
+new MutationObserver(readCols).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+applyPrefs();
+S.screen=0; /* always open on the welcome screen; saved progress is offered there */
+render();
+})();
+</script>
+</body></html>
