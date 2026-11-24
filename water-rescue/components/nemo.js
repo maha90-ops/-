@@ -24,7 +24,8 @@
       <path class="nemo-mouth" d="M52 65 q8 6 16 0" stroke="#5ff2ff" stroke-width="3" fill="none" stroke-linecap="round"/>
       <ellipse cx="38" cy="30" rx="12" ry="4" fill="#fff" opacity=".8"/>
       <rect x="34" y="86" width="52" height="30" rx="14" fill="url(#nm-head)" stroke="#8fb8da" stroke-width="2"/>
-      <path d="M60 92 C 63 97 65 99 65 102 a5 5 0 0 1 -10 0 C 55 99 57 97 60 92Z" fill="url(#nm-drop)"/>
+      <path d="M60 90 C 63 95 65 97 65 100 a5 5 0 0 1 -10 0 C 55 97 57 95 60 90Z" fill="url(#nm-drop)"/>
+      <g shape-rendering="crispEdges"><rect x="38" y="108" width="44" height="5" fill="#fff"/><g fill="#c8102e">${[40, 48, 56, 64, 72].map(x => `<rect x="${x}" y="109" width="3" height="3"/>`).join("")}</g><g fill="#007a3d">${[44, 52, 60, 68, 76].map(x => `<rect x="${x}" y="109" width="3" height="3"/>`).join("")}</g></g>
     </g>
   </svg>`;
 

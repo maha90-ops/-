@@ -25,8 +25,10 @@
       <radialGradient id="g-tree" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#8af0a0"/><stop offset="1" stop-color="#1f8045"/></radialGradient>
       <radialGradient id="g-drop" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#d6f8ff"/><stop offset="1" stop-color="#1aa0dc"/></radialGradient>
       <radialGradient id="g-vapor"><stop offset="0" stop-color="#ffffff" stop-opacity=".85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
-      <linearGradient id="g-building" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5677a6"/><stop offset="1" stop-color="#34507d"/></linearGradient>
-      <linearGradient id="g-building2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a8bbb"/><stop offset="1" stop-color="#425f8f"/></linearGradient>
+      <linearGradient id="g-building" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#efe3c8"/><stop offset="1" stop-color="#cbb48a"/></linearGradient>
+      <linearGradient id="g-building2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e6d6b4"/><stop offset="1" stop-color="#bfa577"/></linearGradient>
+      <radialGradient id="g-olive" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#c9d9a0"/><stop offset=".55" stop-color="#8aa75a"/><stop offset="1" stop-color="#4f6b32"/></radialGradient>
+      <radialGradient id="g-gold" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff1a8"/><stop offset=".5" stop-color="#e8b923"/><stop offset="1" stop-color="#a87a0c"/></radialGradient>
       <filter id="f-soft" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#06142e" flood-opacity=".28"/></filter>
       <filter id="f-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       <filter id="f-blur"><feGaussianBlur stdDeviation="3"/></filter>
@@ -68,12 +70,17 @@
       ${snow ? `<path class="snow" d="${snowP}" fill="#f4f9ff"/>` : ''}</g>`;
   };
 
+  /* شجرة زيتون: جذع ملتوٍ وتاج فضي مخضر وثمار صغيرة */
   S.tree = (x, y, s = 1, cls = '') => `
-    <g class="tree ${cls}"><g transform="translate(${x} ${y}) scale(${s})">
-      <ellipse cx="0" cy="2" rx="18" ry="4" fill="#000" opacity=".15"/>
-      <rect x="-4" y="-26" width="8" height="28" rx="3" fill="#7a4b2a"/>
-      <g class="tree-crown"><circle cx="0" cy="-44" r="24" fill="url(#g-tree)"/><circle cx="-14" cy="-32" r="15" fill="url(#g-tree)"/><circle cx="14" cy="-32" r="15" fill="url(#g-tree)"/>
-      <ellipse cx="-7" cy="-56" rx="8" ry="4" fill="#fff" opacity=".35"/></g>
+    <g class="tree olive ${cls}"><g transform="translate(${x} ${y}) scale(${s})">
+      <ellipse cx="0" cy="2" rx="20" ry="4" fill="#000" opacity=".15"/>
+      <path d="M-6 2 C -7 -6 -2 -10 -7 -22 L -3 -23 C 0 -15 1 -12 0 -7 C 2 -14 5 -17 6 -24 L 10 -23 C 7 -15 6 -7 6 2Z" fill="#7a5a3a"/>
+      <g class="tree-crown">
+        <ellipse cx="-12" cy="-30" rx="15" ry="10" fill="url(#g-olive)"/><ellipse cx="11" cy="-33" rx="16" ry="11" fill="url(#g-olive)"/>
+        <ellipse cx="-1" cy="-43" rx="16" ry="11" fill="url(#g-olive)"/><ellipse cx="17" cy="-24" rx="9" ry="7" fill="url(#g-olive)"/>
+        <g fill="#3f3355"><circle cx="-8" cy="-27" r="1.8"/><circle cx="6" cy="-38" r="1.8"/><circle cx="14" cy="-28" r="1.8"/><circle cx="-4" cy="-45" r="1.6"/></g>
+        <ellipse cx="-5" cy="-49" rx="8" ry="3.5" fill="#fff" opacity=".3"/>
+      </g>
     </g></g>`;
 
   S.waves = (x, y, w, h, cls = '') => `

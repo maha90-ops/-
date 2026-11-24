@@ -1,7 +1,7 @@
 /* service-worker.js — Offline First
    يخزن كل ملفات التطبيق عند أول زيارة، ثم يخدمها من الذاكرة المحلية.
    عند تعديل أي ملف: غيّر رقم VERSION ليحصل الطلاب على النسخة الجديدة. */
-const VERSION = 'wrm-v1.0.0';
+const VERSION = 'wrm-v1.1.0';
 const CORE = [
   './', './index.html', './style.css', './app.js', './data.js', './manifest.json',
   './modules/utils.js', './modules/store.js', './modules/audio.js',

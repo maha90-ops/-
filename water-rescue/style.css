@@ -798,3 +798,24 @@ html[data-motion="low"] .confetti { display: none; }
   .certificate { aspect-ratio: auto; padding: 12px; }
   .cert-border { outline-width: 5px; outline-offset: 4px; padding: 20px 12px; }
 }
+
+/* =========================================================
+   الهوية الفلسطينية — لمسات خفيفة فقط:
+   شريط تطريز (فلاحي) رفيع في أماكن قليلة، شجر الزيتون، بيوت الحجر.
+   ========================================================= */
+:root {
+  --tatreez: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' shape-rendering='crispEdges'%3E%3Cg fill='%23c8102e'%3E%3Crect x='11' y='0' width='2' height='2'/%3E%3Crect x='9' y='2' width='2' height='2'/%3E%3Crect x='13' y='2' width='2' height='2'/%3E%3Crect x='7' y='4' width='2' height='2'/%3E%3Crect x='15' y='4' width='2' height='2'/%3E%3Crect x='9' y='6' width='2' height='2'/%3E%3Crect x='13' y='6' width='2' height='2'/%3E%3Crect x='11' y='8' width='2' height='2'/%3E%3C/g%3E%3Crect x='11' y='4' width='2' height='2' fill='%23007a3d'/%3E%3Cg fill='%23151515'%3E%3Crect x='1' y='4' width='2' height='2'/%3E%3Crect x='21' y='4' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+}
+.tatreez-band, .stage-head::after, .map-title::after, .hud::after, .modal::before, .cert-border::before, .cert-border::after {
+  content: ''; display: block; height: 12px; background: var(--tatreez) repeat-x center / 24px 12px;
+}
+/* تحت شريط التقدم */
+.hud::after { position: absolute; inset-inline: 28px; bottom: -6px; opacity: .55; pointer-events: none; }
+/* فاصل قصير تحت عنوان المرحلة والخريطة */
+.stage-head::after, .map-title::after { width: 144px; margin-top: 8px; opacity: .8; }
+/* أعلى النوافذ */
+.modal::before { margin: -8px -4px 12px; opacity: .7; }
+/* إطار الشهادة: شريطا تطريز كاملا الوضوح */
+.cert-border::before, .cert-border::after { width: 100%; height: 14px; background-size: 28px 14px; }
+html[data-contrast="high"] .hud::after { opacity: 1; }
+@media print { .cert-border::before, .cert-border::after { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }

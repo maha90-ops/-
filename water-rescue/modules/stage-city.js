@@ -9,8 +9,12 @@
   function scene() {
     const b = BUILD.map(([x, w, h], i) => {
       let win = '';
-      for (let yy = 360 - h + 18; yy < 345; yy += 26) for (let xx = x + 12; xx < x + w - 14; xx += 22) win += `<rect x="${xx}" y="${yy}" width="10" height="13" rx="2"/>`;
-      return `<g class="bld"><rect x="${x}" y="${360 - h}" width="${w}" height="${h}" rx="6" fill="url(#g-building${i % 2 ? '2' : ''})"/><g fill="#ffe7a3" opacity=".75">${win}</g></g>`;
+      for (let yy = 360 - h + 20; yy < 345; yy += 28) for (let xx = x + 12; xx < x + w - 14; xx += 22) win += `<path d="M${xx} ${yy + 14} v-8 a5 5 0 0 1 10 0 v8z"/>`;
+      // قبة صغيرة على بعض البيوت، كما في البلدات الفلسطينية القديمة
+      const dome = i % 3 === 0 ? `<path d="M${x + w / 2 - 16} ${360 - h} a16 16 0 0 1 32 0z" fill="url(#g-building2)"/>` : '';
+      return `<g class="bld">${dome}<rect x="${x}" y="${360 - h}" width="${w}" height="${h}" rx="4" fill="url(#g-building${i % 2 ? '2' : ''})"/>
+        <g stroke="#b59d72" stroke-width="1" opacity=".5">${Array.from({ length: Math.floor(h / 28) }, (_, k) => `<line x1="${x}" x2="${x + w}" y1="${360 - h + 14 + k * 28}" y2="${360 - h + 14 + k * 28}"/>`).join('')}</g>
+        <g fill="#5d6f86" stroke="#fff6e0" stroke-width="1.5">${win}</g></g>`;
     }).join('');
     const tank = (x, y, lvl) => `<g class="act act-tanks lv${lvl}"><rect x="${x}" y="${y - 26}" width="34" height="26" rx="8" fill="#9fd8f2" stroke="#fff" stroke-width="2"/><rect x="${x + 4}" y="${y - 14}" width="26" height="10" rx="3" fill="#1aa0dc"/><rect x="${x + 6}" y="${y}" width="4" height="6" fill="#ccc"/><rect x="${x + 24}" y="${y}" width="4" height="6" fill="#ccc"/></g>`;
     const barrel = (x, lvl) => `<g class="act act-harvest lv${lvl}"><path d="M${x + 4} ${360 - 120} L${x + 4} 330" stroke="#c8d4e6" stroke-width="5" fill="none"/><rect x="${x - 10}" y="330" width="28" height="30" rx="6" fill="#2fbf71" stroke="#fff" stroke-width="2"/><text x="${x + 4}" y="351" text-anchor="middle" font-size="14">💧</text></g>`;
@@ -27,6 +31,10 @@
       <g class="reservoir"><rect x="22" y="290" width="96" height="70" rx="10" fill="#d9e6f2" stroke="#fff" stroke-width="3"/>
         <rect class="res-water" x="28" y="296" width="84" height="58" rx="6" fill="url(#g-lake)"/>
         <text x="70" y="284" text-anchor="middle" font-size="13" fill="#fff">خزان المدينة</text></g>
+      <g class="skyline-far" aria-hidden="true">
+        <rect x="341" y="182" width="48" height="28" fill="#3d6fa6"/><rect x="341" y="182" width="48" height="5" fill="#e9dcc3"/>
+        <path d="M343 182 a22 22 0 0 1 44 0z" fill="url(#g-gold)"/><line x1="365" y1="160" x2="365" y2="150" stroke="#e8b923" stroke-width="2"/>
+      </g>
       ${b}
       ${tank(250, 360 - 220, 1)}${tank(438, 360 - 240, 1)}${tank(160, 360 - 170, 2)}${tank(520, 360 - 180, 2)}
       ${barrel(330, 1)}${barrel(700, 2)}
@@ -39,7 +47,7 @@
       ${infil(1, 40)}${infil(2, 690)}
       <rect class="c-flood" x="0" y="400" width="800" height="60" fill="#3fa9e8"/>
       <g class="c-banner"><rect x="230" y="20" width="340" height="50" rx="25" fill="#0b2a55" stroke="#5fe39a" stroke-width="2.5"/><text x="400" y="53" text-anchor="middle" font-size="22" fill="#fff" font-weight="700">🌿 مدينة خضراء مستدامة</text></g>
-    `, 'مدينة تعاني من أزمة مياه: حرارة مرتفعة، أشجار قليلة، تسريب، وفيضان في الشوارع');
+    `, 'مدينة فلسطينية بيوتها من الحجر تعاني من أزمة مياه: حرارة مرتفعة، أشجار قليلة، تسريب، وفيضان في الشوارع');
   }
 
   WR.views.city = {
