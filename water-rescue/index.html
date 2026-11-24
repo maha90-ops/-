@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>مركز إنقاذ كوكب الماء</title>
+  <meta name="description" content="مهمة اكتشاف دورة المياه في الطبيعة: بيئة تعلم تفاعلية لطلاب المرحلة الأساسية.">
+  <meta name="theme-color" content="#071a3a">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="إنقاذ الماء">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#view">تخطَّ إلى المحتوى</a>
+
+  <!-- خلفية فضائية خفيفة -->
+  <div class="bg-space" aria-hidden="true"><div class="stars s1"></div><div class="stars s2"></div><div class="bg-glow"></div></div>
+
+  <!-- شريط التقدم العلوي (HUD) -->
+  <header id="hud" class="hud glass" hidden>
+    <button id="hud-map" class="btn-icon" type="button" aria-label="الخريطة" title="الخريطة">🗺️</button>
+    <div class="hud-mission">
+      <div class="hud-label"><span class="muted">المهمة الحالية:</span> <b id="hud-stage">—</b></div>
+      <div class="hud-progress" role="progressbar" aria-label="نسبة إنجاز المهمة" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="hud-bar"><span id="hud-fill"></span></div><b id="hud-pct">٠٪</b>
+      </div>
+    </div>
+    <div class="hud-stats">
+      <span class="chip" id="hud-points" title="نقاطك" aria-live="polite">⭐ <span class="sr-only">نقاطك:</span><b>٠</b></span>
+      <span class="chip chip-badges" id="hud-badges" title="الشارات">🏅 <span class="sr-only">الشارات:</span><b>٠</b></span>
+    </div>
+    <button id="hud-sound" class="btn-icon" type="button" aria-pressed="true" aria-label="الصوت مفعّل — اضغط لإيقافه" title="الصوت">🔊</button>
+    <button id="hud-settings" class="btn-icon" type="button" aria-label="الإعدادات وإمكانية الوصول" title="الإعدادات">⚙️</button>
+  </header>
+
+  <main id="view" class="view" tabindex="-1"></main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="sr-announce" class="sr-only" aria-live="assertive"></div>
+
+  <noscript><p style="padding:2rem;color:#fff">تحتاج هذه البيئة إلى تفعيل JavaScript.</p></noscript>
+
+  <!-- ترتيب التحميل مهم: البيانات ← الأدوات ← المكونات ← المراحل ← التطبيق -->
+  <script src="data.js"></script>
+  <script src="modules/utils.js"></script>
+  <script src="modules/store.js"></script>
+  <script src="modules/audio.js"></script>
+  <script src="components/scenes.js"></script>
+  <script src="components/nemo.js"></script>
+  <script src="components/ui.js"></script>
+  <script src="modules/intro.js"></script>
+  <script src="modules/map.js"></script>
+  <script src="modules/stage-lab.js"></script>
+  <script src="modules/stage-investigate.js"></script>
+  <script src="modules/stage-clouds.js"></script>
+  <script src="modules/stage-weather.js"></script>
+  <script src="modules/stage-planet.js"></script>
+  <script src="modules/stage-whatif.js"></script>
+  <script src="modules/stage-city.js"></script>
+  <script src="modules/stage-challenge.js"></script>
+  <script src="modules/achievement.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
