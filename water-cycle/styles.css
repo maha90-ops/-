@@ -1,0 +1,247 @@
+/* رحلة قطرة الماء — الأنماط
+   Layout: scene is the hero (one interactive focus); Kanaan sits beside it on wide screens and below it on phones;
+   the question card follows the scene so the eye moves: observe → think → answer.
+   Single light look by design (outdoor daylight scene), colors set explicitly. */
+:root{
+  color-scheme: light;
+  --bg:#F2F6F8;          /* هواء صافٍ */
+  --surface:#FFFFFF;
+  --ink:#1D2A36;
+  --muted:#5B6B78;
+  --line:#DCE5EB;
+  --water:#1F78B8;       /* اللون الأساسي: ماء */
+  --water-deep:#165A8C;
+  --water-soft:#E3F1FA;
+  --sun:#F2A21E;
+  --sun-soft:#FFF3D9;
+  --olive:#5F7433;
+  --olive-soft:#EDF2E2;
+  --stone:#E6D9BD;
+  --tatreez:#A8323B;     /* أحمر التطريز: لمسة واحدة فقط */
+  --ok:#23804F; --ok-soft:#E2F3E9;
+  --try:#B55F12; --try-soft:#FCEBDA;
+  --focus:#F2A21E;
+  --shadow:0 1px 2px rgba(29,42,54,.06),0 10px 28px rgba(29,42,54,.07);
+  --f-display:"Baloo Bhaijaan 2","Tajawal","Segoe UI",Tahoma,sans-serif;
+  --f-body:"Tajawal","Segoe UI",Tahoma,Arial,sans-serif;
+  --r:20px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+svg{display:block}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:12px}
+
+/* ---------- الشريط العلوي ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--surface)}
+.topbar__inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:16px;
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:700;font-size:1.15rem;color:var(--water-deep);white-space:nowrap}
+.brand img{width:30px;height:auto}
+.progress{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;min-width:0}
+.progress__text{font-weight:700;font-size:.95rem;white-space:nowrap}
+.progress__track{list-style:none;margin:0;padding:0;display:flex;gap:6px}
+.progress__track li{width:42px;height:10px;border-radius:99px;background:var(--line);position:relative}
+.progress__track li.is-current{background:var(--water-soft);box-shadow:inset 0 0 0 2px var(--water)}
+.progress__track li.is-done{background:var(--water)}
+.tools{display:flex;gap:6px}
+.tool{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid var(--line);background:var(--surface);border-radius:99px;cursor:pointer;font-size:.85rem;font-weight:700;color:var(--muted)}
+.tool svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tool svg .fill{fill:currentColor;stroke:none}
+.tool[aria-pressed="true"]{background:var(--water-soft);border-color:var(--water);color:var(--water-deep)}
+.tool[aria-pressed="false"] .wave{opacity:.35}
+/* شريط تطريز رفيع: غرزة متقاطعة */
+.tatreez{height:6px;background:
+  linear-gradient(45deg,transparent 40%,var(--tatreez) 40% 60%,transparent 60%) 0 0/12px 6px,
+  linear-gradient(-45deg,transparent 40%,var(--tatreez) 40% 60%,transparent 60%) 0 0/12px 6px;opacity:.55}
+
+/* ---------- تخطيط المهمة ---------- */
+.mission{max-width:1180px;margin:0 auto;display:grid;gap:18px;
+  grid-template-columns:minmax(0,1fr) 320px;
+  grid-template-areas:"head head" "stage guide" "ask guide";
+  align-items:start;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mission__head{grid-area:head;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+.eyebrow{margin:0;font-weight:800;font-size:.85rem;letter-spacing:.02em;color:var(--olive);background:var(--olive-soft);padding:2px 12px;border-radius:99px}
+.mission__head h1{margin:0;font-family:var(--f-display);font-size:clamp(1.8rem,3.4vw,2.4rem);line-height:1.2;color:var(--water-deep)}
+.objective{margin:0;color:var(--muted);font-size:1.05rem;flex-basis:100%}
+
+/* ---------- المشهد ---------- */
+.stage{grid-area:stage;min-width:0}
+.scene{position:relative;border-radius:var(--r);overflow:hidden;background:#EEF7FC;box-shadow:var(--shadow);aspect-ratio:16/9;max-width:100%}
+.scene__art{width:100%;height:100%}
+.scene__art .sun,.scene__art .water,.scene__art .vapor,.scene__art .drop{cursor:pointer}
+
+/* حالة السكون: لا حركة مستمرة */
+.sun__rays{transform-box:fill-box;transform-origin:center}
+.sun__ring{opacity:0;transform-box:fill-box;transform-origin:center}
+.sun__glow{opacity:.5;transition:opacity .6s}
+.beams{opacity:0;transition:opacity .6s}
+.ripple{opacity:0;transform-box:fill-box;transform-origin:center}
+.vapor .wisp{opacity:.35;transform-box:fill-box;transform-origin:bottom center}
+.vapor--edge .wisp{opacity:.35}
+.drop{transform-box:fill-box;transform-origin:center bottom;transition:transform 1.6s cubic-bezier(.4,0,.2,1),opacity 1.6s}
+
+/* الشمس: تسخين */
+.scene.is-heat .sun__rays{animation:spin 6s linear infinite}
+.scene.is-heat .sun__glow{opacity:1}
+.scene.is-heat .beams{opacity:.9;animation:beam 1s linear infinite}
+.scene.is-heat .vapor .wisp,.scene.is-rise .vapor .wisp{animation:rise 2.4s ease-out infinite}
+.scene.is-heat .w2,.scene.is-rise .w2{animation-delay:.8s!important}
+.scene.is-heat .w3,.scene.is-rise .w3{animation-delay:1.6s!important}
+/* الماء: تموّج */
+.scene.is-ripple .ripple{animation:ripple 1.2s ease-out 2}
+.scene.is-ripple .drop{animation:wiggle .9s ease-in-out 1}
+/* تركيز بصري (سقالة المستوى 2+) */
+.scene.spot-sun .sun__ring{opacity:1;animation:spin 8s linear infinite}
+/* نهاية المهمة: القطرة تصعد */
+.scene.is-solved .drop{transform:translate(-90px,-200px) scale(.55);opacity:.95}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes beam{to{stroke-dashoffset:-18}}
+@keyframes rise{0%{opacity:0;transform:translateY(18px)}30%{opacity:.95}100%{opacity:0;transform:translateY(-70px)}}
+@keyframes ripple{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}60%{transform:rotate(5deg)}}
+
+/* أزرار الاستكشاف فوق المشهد */
+.hotspots{position:absolute;inset:0;pointer-events:none}
+.hotspot{pointer-events:auto;position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;
+  min-height:40px;padding:4px 14px 4px 10px;border-radius:99px;border:2px solid var(--surface);
+  background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(29,42,54,.14);cursor:pointer;
+  font-weight:800;font-size:.95rem;color:var(--ink);white-space:nowrap;transition:transform .15s}
+.hotspot:hover{transform:translate(-50%,-50%) scale(1.05)}
+.hotspot__mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--water-soft);border:2px solid var(--water)}
+.hotspot__mark svg{width:13px;height:13px;fill:none;stroke:var(--surface);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.hotspot.is-seen .hotspot__mark{background:var(--ok);border-color:var(--ok)}
+.hotspot.is-seen .hotspot__mark svg{opacity:1}
+.hotspot.is-next::after{content:"";position:absolute;inset:-6px;border-radius:99px;border:3px solid var(--water);animation:pulse 1.8s ease-out infinite}
+.hotspot.is-spot{border-color:var(--sun);background:var(--sun-soft)}
+@keyframes pulse{0%{opacity:.8;transform:scale(.96)}100%{opacity:0;transform:scale(1.18)}}
+
+/* بطاقة المعلومات */
+.infocard{position:absolute;top:14px;right:14px;width:min(330px,calc(100% - 28px));display:flex;gap:8px;align-items:flex-start;
+  background:var(--surface);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);border-inline-start:5px solid var(--water);animation:pop .25s ease-out}
+.infocard__body{flex:1;min-width:0}
+.infocard__title{margin:0;font-family:var(--f-display);font-weight:700;font-size:1.1rem;color:var(--water-deep);line-height:1.3}
+.infocard__text{margin:2px 0 0;font-size:1rem;line-height:1.55}
+.infocard__close{flex:none;width:36px;height:36px;border-radius:50%;border:0;background:var(--bg);cursor:pointer;display:grid;place-items:center}
+.infocard__close svg{width:16px;height:16px;fill:none;stroke:var(--muted);stroke-width:2.6;stroke-linecap:round}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* ---------- كنعان ---------- */
+.guide{grid-area:guide;position:sticky;top:96px;display:flex;flex-direction:column;align-items:center;gap:0}
+.guide__avatar{width:132px;height:132px;border-radius:50%;background:var(--surface);padding:5px;box-shadow:var(--shadow);position:relative;z-index:1;margin-bottom:-22px}
+.guide__avatar img{width:100%;height:100%;border-radius:50%;display:block;transition:transform .25s}
+.guide__avatar.is-talking img{animation:nod .5s ease-out}
+@keyframes nod{40%{transform:translateY(-4px) scale(1.03)}}
+.guide__bubble{width:100%;background:var(--surface);border-radius:var(--r);padding:30px 18px 16px;box-shadow:var(--shadow);text-align:start}
+.guide__name{margin:0 0 4px;font-family:var(--f-display);font-weight:700;color:var(--olive);text-align:center;font-size:1rem}
+.guide__text{margin:0;font-size:1.12rem;line-height:1.7;min-height:3.4em}
+.guide__actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.guide__level{margin:10px 0 0;font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.guide__level .dots{display:inline-flex;gap:4px}
+.guide__level .dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.guide__level .dots i.on{background:var(--sun)}
+
+.ghost{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 14px;border-radius:14px;
+  border:2px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:.98rem;white-space:nowrap}
+.ghost:hover{border-color:var(--water);color:var(--water-deep)}
+.ghost svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ghost:disabled{opacity:.45;cursor:default;border-color:var(--line);color:var(--muted)}
+
+/* ---------- السؤال ---------- */
+.ask{grid-area:ask;min-width:0;background:var(--surface);border-radius:var(--r);padding:18px 20px 20px;box-shadow:var(--shadow)}
+.ask__step{margin:0;font-size:.85rem;font-weight:800;color:var(--water);letter-spacing:.02em}
+.ask__question{margin:2px 0 14px;font-family:var(--f-display);font-size:clamp(1.3rem,2.4vw,1.6rem);line-height:1.35;text-wrap:balance}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.choice{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:112px;padding:12px 8px;
+  border-radius:18px;border:2px solid var(--line);background:var(--surface);cursor:pointer;font-weight:800;font-size:1.12rem;
+  transition:border-color .15s,transform .15s,background .15s}
+.choice:hover:not([aria-disabled="true"]){border-color:var(--water);transform:translateY(-2px)}
+.choice__icon{width:48px;height:48px}
+.choice__icon svg{width:100%;height:100%;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.choice__state{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;display:none;place-items:center}
+.choice__state svg{width:16px;height:16px;fill:none;stroke:var(--surface);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.choice__note{font-size:.82rem;font-weight:700;display:none}
+.choice.is-wrong{background:var(--try-soft);border-color:#E9C29C;color:#6B4A2C;cursor:default}
+.choice.is-wrong .choice__icon{opacity:.45}
+.choice.is-wrong .choice__state{display:grid;background:var(--try)}
+.choice.is-wrong .choice__note{display:block;color:var(--try)}
+.choice.is-right{background:var(--ok-soft);border-color:var(--ok);cursor:default}
+.choice.is-right .choice__state{display:grid;background:var(--ok)}
+.choice.is-right .choice__note{display:block;color:var(--ok)}
+.choice.is-muted{opacity:.5;cursor:default}
+.choice.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* المورد المكتسب */
+.earned{margin-top:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px;border-radius:18px;background:var(--olive-soft);animation:pop .35s ease-out}
+.earned__icon{width:56px;height:56px;border-radius:16px;background:var(--surface);display:grid;place-items:center;flex:none}
+.earned__icon svg{width:38px;height:38px;fill:var(--stone);stroke:#B9A47C;stroke-width:2}
+.earned__text{flex:1;min-width:160px}
+.earned__badge{margin:0;font-size:.9rem;font-weight:700;color:var(--olive)}
+.earned__resource{margin:0;font-family:var(--f-display);font-size:1.3rem;font-weight:700;line-height:1.3}
+
+.primary{min-height:54px;padding:0 24px;border:0;border-radius:16px;background:var(--water);color:#FFFFFF;font-weight:800;font-size:1.08rem;cursor:pointer;box-shadow:0 4px 0 var(--water-deep)}
+.primary:hover{background:var(--water-deep)}
+.primary:active{transform:translateY(2px);box-shadow:0 2px 0 var(--water-deep)}
+.primary:disabled{background:#9DB3C3;box-shadow:none;cursor:default}
+
+/* ---------- مشهد البناء ---------- */
+.build{border:0;padding:0;border-radius:24px;width:min(520px,calc(100% - 32px));max-height:calc(100% - 32px);box-shadow:0 20px 60px rgba(29,42,54,.3);background:var(--surface);color:var(--ink)}
+.build::backdrop{background:rgba(22,42,60,.45)}
+.build__inner{padding:22px 22px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.build__kanaan{width:110px;height:auto;margin-bottom:-6px}
+.build h2{margin:0;font-family:var(--f-display);font-size:1.45rem;line-height:1.3;color:var(--water-deep);text-wrap:balance}
+.build__art{width:100%;max-width:400px;height:auto}
+.stones rect{transform-box:fill-box;transform-origin:center}
+.stones rect.fall{animation:fall .45s cubic-bezier(.3,1.4,.6,1) both}
+@keyframes fall{from{opacity:0;transform:translateY(-70px)}to{opacity:1;transform:none}}
+.parts{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.parts li{display:flex;align-items:center;gap:4px;font-size:.85rem;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--bg);color:var(--muted)}
+.parts li svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.parts li.is-done{background:var(--ok-soft);color:var(--ok)}
+.build__story{margin:0;font-size:1.05rem;max-width:40ch}
+.build__actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+.build__actions .ghost{flex:0 1 auto}
+.build__note{margin:0;font-size:.85rem;color:var(--muted)}
+
+/* ---------- الشاشات الصغيرة ---------- */
+@media (max-width:900px){
+  .mission{grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "stage" "guide" "ask";gap:14px}
+  .guide{position:static;flex-direction:row;align-items:flex-start;gap:10px}
+  .guide__avatar{width:76px;height:76px;margin:0;flex:none;padding:3px}
+  .guide__bubble{padding:12px 14px;position:relative}
+  .guide__bubble::before{content:"";position:absolute;top:24px;right:-8px;border:8px solid transparent;border-left-color:var(--surface);border-right:0}
+  .guide__name{text-align:start}
+  .guide__text{min-height:0}
+}
+@media (max-width:640px){
+  body{font-size:17px}
+  .tool__label{display:none}
+  .tool{padding:0;width:44px;justify-content:center}
+  .brand span{display:none}
+  .progress{justify-content:flex-start}
+  .progress__track li{width:22px}
+  /* البطاقة تنزل تحت المشهد كي لا تغطيه */
+  .infocard{position:relative;top:auto;right:auto;width:auto;margin-top:10px;box-shadow:0 1px 2px rgba(29,42,54,.08)}
+  .scene{overflow:visible;aspect-ratio:auto;background:none;box-shadow:none}
+  .scene__art{border-radius:var(--r);box-shadow:var(--shadow);height:auto;aspect-ratio:16/9}
+  .hotspots{bottom:auto;aspect-ratio:16/9}
+  .hotspot{font-size:.82rem;min-height:36px;padding:2px 10px 2px 6px}
+  .hotspot__mark{width:18px;height:18px}
+  .choices{gap:8px}
+  .choice{min-height:100px;font-size:1rem}
+  .choice__icon{width:40px;height:40px}
+  .earned .primary{width:100%}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .scene.is-heat .vapor .wisp,.scene.is-rise .vapor .wisp{opacity:.9}
+}
